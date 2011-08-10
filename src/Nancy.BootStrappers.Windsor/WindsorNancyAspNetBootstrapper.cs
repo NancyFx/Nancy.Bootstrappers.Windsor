@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Castle.MicroKernel.Lifestyle;
 using Castle.MicroKernel.Registration;
+using Castle.MicroKernel.Releasers;
 using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.Windsor;
 using Nancy.BootStrappers.Windsor;
@@ -11,12 +12,22 @@ using Nancy.Routing;
 
 namespace Nancy.Bootstrappers.Windsor
 {
+    public class WindsorNancyChildContainer : WindsorContainer
+    {
+        public override void Dispose()
+        {
+            this.Parent.RemoveChildContainer(this);
+            base.Dispose();
+        }
+    }
     /// <summary>
     /// This does not create a child container because in Windsor this leads to memory leaks.  Instead be sure to use
     /// PerWebRequest lifestyle for anything that needs to be disposed after each request.
     /// </summary>
     public abstract class WindsorNancyAspNetBootstrapper : NancyBootstrapperWithRequestContainerBase<IWindsorContainer>
     {
+        bool _modulesRegistered;
+
         protected override IEnumerable<IStartup> GetStartupTasks()
         {
             return this.ApplicationContainer.ResolveAll<IStartup>();
@@ -39,32 +50,33 @@ namespace Nancy.Bootstrappers.Windsor
             return container;
         }
 
-        protected override IWindsorContainer CreateRequestContainer()
-        {
-            var child = new WindsorContainer();
-            this.ApplicationContainer.AddChildContainer(child);
-            return child;
-        }
+        // Per request containers are bad news with Windsor. Don't do it, memory leaks will happen
+        protected override IWindsorContainer CreateRequestContainer() { return null; }
+
+        // Sealing this since it doesn't work, need to use PerWebRequestLifecycle
+        protected override sealed void ConfigureRequestContainer(IWindsorContainer container) { }
 
         protected override void RegisterRequestContainerModules(IWindsorContainer container, 
             IEnumerable<ModuleRegistration> moduleRegistrationTypes)
         {
+            if (_modulesRegistered) return;
+            _modulesRegistered = true;
             IEnumerable<ComponentRegistration<object>> components = moduleRegistrationTypes
                 .Select(r => Component.For(typeof (NancyModule))
                 .ImplementedBy(r.ModuleType)
                 .Named(r.ModuleKey)
-                .LifeStyle.Transient);
-            container.Register(components.ToArray());
+                .LifeStyle.Custom<HybridPerWebRequestLifestyleManager<TransientLifestyleManager>>());
+            this.ApplicationContainer.Register(components.ToArray());
         }
 
         protected override IEnumerable<NancyModule> GetAllModules(IWindsorContainer container)
         {
-            return container.ResolveAll<NancyModule>();
+            return this.ApplicationContainer.ResolveAll<NancyModule>();
         }
 
         protected override NancyModule GetModuleByKey(IWindsorContainer container, string moduleKey)
         {
-            return container.Resolve<NancyModule>(moduleKey);
+            return this.ApplicationContainer.Resolve<NancyModule>(moduleKey);
         }
 
         protected override void RegisterBootstrapperTypes(IWindsorContainer applicationContainer)

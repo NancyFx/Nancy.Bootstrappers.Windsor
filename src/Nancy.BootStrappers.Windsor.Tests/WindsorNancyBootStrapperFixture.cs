@@ -128,16 +128,18 @@ namespace Nancy.Bootstrappers.Windsor.Tests
             foreach (var type in types) modLookup[type].Count().ShouldEqual(1);
         }
 
-        [Fact]
-        public void Test_memory_leak()
+        [Fact(Skip = "Used for ensuring memory isn't leaking only")]
+        public void Check_windsor_memory_leak()
         { 
             var engine = this.bootstrapper.GetEngine();
-            engine.HandleRequest(new Request("GET", "/fake/route/with/some/parts", "http"));
+            var ctx = engine.HandleRequest(new Request("GET", "/fake/route/with/some/parts", "http"));
+            ctx.Dispose();
             Console.WriteLine("Start - " + GC.GetTotalMemory(false).ToString("#,###,##0") + " Bytes");
-            for (int i = 0; i < 1000000; i++)
+            for (int i = 0; i < 10000; i++)
             {
                 engine = this.bootstrapper.GetEngine();
-                engine.HandleRequest(new Request("GET", "/fake/route/with/some/parts", "http"));
+                ctx = engine.HandleRequest(new Request("GET", "/fake/route/with/some/parts", "http"));
+                ctx.Dispose();
             }
             Console.WriteLine("End - " + GC.GetTotalMemory(false).ToString("#,###,##0") + " Bytes");
         }
