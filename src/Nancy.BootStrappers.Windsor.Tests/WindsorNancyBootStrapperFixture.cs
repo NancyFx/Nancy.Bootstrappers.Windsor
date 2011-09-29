@@ -36,12 +36,6 @@ namespace Nancy.Bootstrappers.Windsor.Tests
             );
         }
 
-        protected override IWindsorContainer CreateRequestContainer()
-        {
-            this.RequestContainerConfigured = true;
-            return base.CreateRequestContainer();
-        }
-
         protected override void ConfigureApplicationContainer(IWindsorContainer existingContainer)
         {
             ApplicationContainerConfigured = true;
