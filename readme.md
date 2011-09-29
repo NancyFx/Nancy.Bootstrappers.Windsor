@@ -18,8 +18,6 @@ You will need to add the following module to your web config however:
 </modules>
 ```
 
-Do not bother using the `ConfigureRequestContainer()` method as it has been sealed and will do nothing.  Instead use the `ConfigureApplicationContainer()` and use either PerWebRequestLifestyle or Transient depending on whether or not you are using ASP.NET.
-
 If you ave any problems feel free to report bugs here on Github and I will fix them ASAP (it's in my own intrest since I'm using this for work).  Even better would be a pull request with a test ;-).
 
 [1]:http://hammett.castleproject.org/?p=296
