@@ -16,8 +16,6 @@ You will need to add the following module to your web config however:
 </modules>
 ```
 
-If you ave any problems feel free to report bugs here on Github and I will fix them ASAP (it's in my own intrest since I'm using this for work).  Even better would be a pull request with a test ;-).
-
 [1]:http://hammett.castleproject.org/?p=296
 [2]:http://kozmic.pl/2010/06/01/castle-windsor-and-child-containers/
 [3]:http://kozmic.pl/2010/06/02/castle-windsor-and-child-containers-reloaded/
