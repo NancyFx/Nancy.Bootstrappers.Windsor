@@ -24,9 +24,9 @@ namespace Nancy.Bootstrappers.Windsor.Tests
 
         public bool RequestContainerConfigured { get; set; }
 
-        protected override void InitialiseInternal(IWindsorContainer container)
+        protected override void ApplicationStartup(IWindsorContainer container, IPipelines pipelines)
         {
-            base.InitialiseInternal(container);
+            base.ApplicationStartup(container, pipelines);
 
             RequestContainerConfigured = true;
 
