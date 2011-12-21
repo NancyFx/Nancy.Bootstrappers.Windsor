@@ -4,7 +4,7 @@ This is a bootstrapper for using Windsor with Nancy.  A couple of things are wor
 
 Fortunately Windsor has something different, a `PerWebRequestLifestyle` which automagically disposes of instances when the web request ends.  Unfortunately it only works with ASP.NET.
 
-If you are not using ASP.NET it will automatically fall back to a transient lifestyle however this has not been tested and may result in memory leaks. If you have problems please file an issue and I will look into it.
+If you are not using ASP.NET it will automatically fall back to a transient lifestyle however this has not been tested and may result in memory leaks if the components are not release properly. If you have problems please file an issue and I will look into it.  There are plans to test this with the 3.0 release of Windsor
 
 You will need to add the following module to your web config however:
 
