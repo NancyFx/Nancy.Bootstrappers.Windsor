@@ -27,13 +27,13 @@ desc "Update shared assemblyinfo file for the build"
 assemblyinfo :version => [:clean] do |asm|
   NANCY_VERSION = get_assembly_version SHARED_ASSEMBLY_INFO
 
-  asm.version = NANCY_VERSION
+    asm.version = NANCY_VERSION
 	asm.company_name = "Nancy"
 	asm.product_name = "Nancy.Bootstrappers.Windsor"
 	asm.title = "Nancy.Bootstrappers.Windsor"
 	asm.description = "A Windsor Bootstrapper for the Nancy web framework"
 	asm.copyright = "Copyright (C) Andreas Hakansson, Steven Robbins and contributors"
-  asm.output_file = SHARED_ASSEMBLY_INFO
+    asm.output_file = SHARED_ASSEMBLY_INFO
 end
 
 desc "Compile solution file"

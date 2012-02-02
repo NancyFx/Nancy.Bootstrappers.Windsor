@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Castle.Core;
+using Castle.DynamicProxy;
 using Castle.MicroKernel.Lifestyle;
+using Castle.MicroKernel.Lifestyle.Scoped;
+using Castle.MicroKernel.Proxy;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.Windsor;
-using Nancy.BootStrappers.Windsor;
 using Nancy.Bootstrapper;
 using Nancy.Routing;
 
@@ -13,11 +16,22 @@ namespace Nancy.Bootstrappers.Windsor
 {
     /// <summary>
     /// This does not create a child container because in Windsor this leads to memory leaks.  Instead be sure to use
-    /// PerWebRequest or Transient lifestyle for anything that needs to be disposed after each request.  
+    /// PerWebRequest lifestyle, which means it must be hosted in an ASP.NET application.
     /// </summary>
     public abstract class WindsorNancyAspNetBootstrapper : NancyBootstrapperBase<IWindsorContainer>
     {
         bool _modulesRegistered;
+
+        protected override NancyInternalConfiguration InternalConfiguration
+        {
+            get
+            {
+                return NancyInternalConfiguration.WithOverrides(c =>
+                {
+                    c.ModuleKeyGenerator = typeof(NancyWindsorModuleKeyGenerator);
+                });
+            }
+        }
 
         protected override IEnumerable<IStartup> GetStartupTasks()
         {
@@ -35,9 +49,15 @@ namespace Nancy.Bootstrappers.Windsor
 
         protected override IWindsorContainer GetApplicationContainer()
         {
-            if (this.ApplicationContainer != null) return this.ApplicationContainer;
+            if (this.ApplicationContainer != null)
+            { 
+                return this.ApplicationContainer;
+            }
             var container = new WindsorContainer();
             container.Kernel.Resolver.AddSubResolver(new CollectionResolver(container.Kernel, true));
+            container.Register(Component.For<IWindsorContainer>().Instance(container));
+            container.Register(Component.For<NancyWindsorRequestScopeInterceptor>());
+            container.Kernel.ProxyFactory.AddInterceptorSelector(new NancyWindsorRequestScopeInterceptorSelector());
             return container;
         }
 
@@ -45,22 +65,36 @@ namespace Nancy.Bootstrappers.Windsor
         {
             if (_modulesRegistered) return;
             _modulesRegistered = true;
-            IEnumerable<ComponentRegistration<object>> components = moduleRegistrationTypes
-                .Select(r => Component.For(typeof (NancyModule))
-                .ImplementedBy(r.ModuleType)
-                .Named(r.ModuleKey)
-                .LifeStyle.Custom<HybridPerWebRequestLifestyleManager<TransientLifestyleManager>>());
-            this.ApplicationContainer.Register(components.ToArray());
+            var components = moduleRegistrationTypes.Select(r => Component.For(typeof (NancyModule))
+                .ImplementedBy(r.ModuleType).Named(r.ModuleKey).LifeStyle.Scoped())
+                .Cast<IRegistration>().ToArray();
+            this.ApplicationContainer.Register(components);
         }
 
         public override IEnumerable<NancyModule> GetAllModules(NancyContext context)
         {
-            return this.ApplicationContainer.ResolveAll<NancyModule>();
+            var currentScope = CallContextLifetimeScope.ObtainCurrentScope();
+            if (currentScope != null)
+            { 
+                return this.ApplicationContainer.ResolveAll<NancyModule>();
+            }
+            using (this.ApplicationContainer.BeginScope())
+            {
+                return this.ApplicationContainer.ResolveAll<NancyModule>();
+            }
         }
 
         public override NancyModule GetModuleByKey(string moduleKey, NancyContext context)
         {
-            return this.ApplicationContainer.Resolve<NancyModule>(moduleKey);
+            var currentScope = CallContextLifetimeScope.ObtainCurrentScope();
+            if (currentScope != null)
+            { 
+                return this.ApplicationContainer.Resolve<NancyModule>(moduleKey);
+            }
+            using (this.ApplicationContainer.BeginScope())
+            {
+                return this.ApplicationContainer.Resolve<NancyModule>(moduleKey);
+            }
         }
 
         protected override void RegisterBootstrapperTypes(IWindsorContainer applicationContainer)
@@ -70,12 +104,9 @@ namespace Nancy.Bootstrappers.Windsor
 
         protected override void RegisterTypes(IWindsorContainer container, IEnumerable<TypeRegistration> typeRegistrations)
         {
-            IEnumerable<ComponentRegistration<object>> components = typeRegistrations
-                .Where(t => t.RegistrationType != typeof (IModuleKeyGenerator))
-                .Select(r => Component.For(r.RegistrationType)
-                    .ImplementedBy(r.ImplementationType));
-            container.Register(components.ToArray());
-            container.Register(Component.For<IModuleKeyGenerator>().ImplementedBy<WindsorModuleKeyGenerator>());
+            var components = typeRegistrations.Select(r => Component.For(r.RegistrationType)
+                .ImplementedBy(r.ImplementationType)).Cast<IRegistration>().ToArray();
+            container.Register(components);
             container.Register(Component.For<Func<IRouteCache>>()
                 .UsingFactoryMethod(ctx => (Func<IRouteCache>) (ctx.Resolve<IRouteCache>)));
         }
@@ -85,7 +116,10 @@ namespace Nancy.Bootstrappers.Windsor
             foreach (CollectionTypeRegistration collectionTypeRegistration in collectionTypeRegistrations)
             {
                 foreach (Type implementationType in collectionTypeRegistration.ImplementationTypes)
-                    container.Register(Component.For(collectionTypeRegistration.RegistrationType).ImplementedBy(implementationType));
+                { 
+                    container.Register(Component.For(collectionTypeRegistration.RegistrationType)
+                        .ImplementedBy(implementationType));
+                }
             }
         }
 
@@ -93,9 +127,45 @@ namespace Nancy.Bootstrappers.Windsor
         {
             foreach (InstanceRegistration instanceRegistration in instanceRegistrations)
             {
-                container.Register(
-                    Component.For(instanceRegistration.RegistrationType).Instance(instanceRegistration.Implementation));
+                container.Register(Component.For(instanceRegistration.RegistrationType)
+                    .Instance(instanceRegistration.Implementation));
             }
+        }
+    }
+
+    public class NancyWindsorRequestScopeInterceptor : IInterceptor
+    {
+        readonly IWindsorContainer _container;
+
+        public NancyWindsorRequestScopeInterceptor(IWindsorContainer container) 
+        {
+            _container = container;
+        }
+
+        public void Intercept(IInvocation invocation)
+        {
+            if (invocation.Method.Name != "HandleRequest")
+            { 
+                invocation.Proceed();
+                return;
+            }
+            using (_container.BeginScope())
+            { 
+                invocation.Proceed();
+            }
+        }
+    }
+
+    public class NancyWindsorRequestScopeInterceptorSelector : IModelInterceptorsSelector
+    {
+        public bool HasInterceptors(ComponentModel model)
+        {
+            return model.Implementation.GetInterfaces().Any(x => x == typeof(INancyEngine));
+        } 
+
+        public InterceptorReference[] SelectInterceptors(ComponentModel model, InterceptorReference[] interceptors)
+        {
+            return new[] { InterceptorReference.ForType<NancyWindsorRequestScopeInterceptor>() };
         }
     }
 }

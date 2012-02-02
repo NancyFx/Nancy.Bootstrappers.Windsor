@@ -1,17 +1,27 @@
 ﻿using System;
-using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using Castle.MicroKernel.Registration;
+using Castle.Windsor;
+using Nancy.BootStrappers.Windsor.Tests.Fakes;
+using Nancy.Bootstrapper;
+using Nancy.Tests;
+using Xunit;
 
 namespace Nancy.Bootstrappers.Windsor.Tests
 {
-    using System.Linq;
-    using Castle.MicroKernel.Registration;
-    using Castle.Windsor;
-    using Nancy.Bootstrappers.Windsor;
-    using Nancy.Routing;
-    using Nancy.Bootstrapper;
-    using Nancy.Tests;
-    using Nancy.Tests.Fakes;
-    using Xunit;
+    public static class Helpers
+    {
+        public static string GetContentsAsString(this Response r)
+        {
+            var stream = new MemoryStream();
+            r.Contents.Invoke(stream);
+            stream.Position = 0;
+            var reader = new StreamReader(stream);
+            return reader.ReadToEnd();
+        }
+    }
+
 
     public class FakeWindsorNancyAspNetBootstrapper : WindsorNancyAspNetBootstrapper
     {
@@ -32,7 +42,7 @@ namespace Nancy.Bootstrappers.Windsor.Tests
 
             container.Register(
                 Component.For<Foo, IFoo>(),
-                Component.For<Dependency, IDependency>()
+                Component.For<FakeDependency, IDependency>()
             );
         }
 
@@ -54,12 +64,18 @@ namespace Nancy.Bootstrappers.Windsor.Tests
         }
 
         [Fact]
-        public void GetEngine_ReturnsEngine()
+        public void the_bootstrapper_returns_an_instance_of_INancyEngine()
         {
             var result = this.bootstrapper.GetEngine();
-
             result.ShouldNotBeNull();
             result.ShouldBeOfType<INancyEngine>();
+        }
+
+        [Fact]
+        public void GetEngine_ConfigureApplicationContainer_Should_Be_Called()
+        {
+            this.bootstrapper.GetEngine();
+            this.bootstrapper.ApplicationContainerConfigured.ShouldBeTrue();
         }
 
         [Fact]
@@ -67,8 +83,8 @@ namespace Nancy.Bootstrappers.Windsor.Tests
         {
             this.bootstrapper.GetEngine();
             var context = new NancyContext();
-            var output1 = this.bootstrapper.GetAllModules(context).Where(nm => nm.GetType() == typeof(FakeNancyModuleWithBasePath)).FirstOrDefault();
-            var output2 = this.bootstrapper.GetAllModules(context).Where(nm => nm.GetType() == typeof(FakeNancyModuleWithBasePath)).FirstOrDefault();
+            var output1 = this.bootstrapper.GetAllModules(context).FirstOrDefault(nm => nm.GetType() == typeof(FakeNancyModuleWithBasePath));
+            var output2 = this.bootstrapper.GetAllModules(context).FirstOrDefault(nm => nm.GetType() == typeof(FakeNancyModuleWithBasePath));
 
             output1.ShouldNotBeNull();
             output2.ShouldNotBeNull();
@@ -89,47 +105,64 @@ namespace Nancy.Bootstrappers.Windsor.Tests
         }
 
         [Fact]
-        public void GetEngine_ConfigureApplicationContainer_Should_Be_Called()
-        {
-            this.bootstrapper.GetEngine();
-
-            this.bootstrapper.ApplicationContainerConfigured.ShouldBeTrue();
-        }
-
-        [Fact]
         public void GetEngine_Defaults_Registered_In_Container()
         {
             this.bootstrapper.GetEngine();
+            var defaults = NancyInternalConfiguration.WithOverrides(x => 
+            {
+                x.ModuleKeyGenerator = typeof(NancyWindsorModuleKeyGenerator);
+            });
+            foreach (var registration in defaults.GetTypeRegistations().Where(x => x.RegistrationType != typeof(INancyEngine)))
+            {
+                this.bootstrapper.Container.Resolve(registration.RegistrationType)
+                    .ShouldBeOfType(registration.ImplementationType);
+            }
+            // NancyEngine is being proxied by Castle to intercept the HandleRequest call
 
-            this.bootstrapper.Container.Resolve<INancyModuleCatalog>();
-            this.bootstrapper.Container.Resolve<IRouteResolver>();
-            this.bootstrapper.Container.Resolve<INancyEngine>();
-            this.bootstrapper.Container.Resolve<IModuleKeyGenerator>();
-            this.bootstrapper.Container.Resolve<IRouteCache>();
-            this.bootstrapper.Container.Resolve<IRouteCacheProvider>();
+            this.bootstrapper.Container.Resolve<INancyEngine>()
+                .GetType().Name.ShouldEqual("INancyEngineProxy");
         }
 
         [Fact]
-        public void Getting_modules_will_not_return_multiple_instances_of_non_dependency_modules()
-        { 
-            this.bootstrapper.GetEngine();
-
-            var nancyModules = this.bootstrapper.GetAllModules(new NancyContext());
-            var modLookup = nancyModules.ToLookup(x => x.GetType());
-
-            var types = nancyModules.Select(x => x.GetType()).Distinct();
-
-            foreach (var type in types) modLookup[type].Count().ShouldEqual(1);
+        public void can_make_request_from_module_with_no_dependency()
+        {
+            var engine = this.bootstrapper.GetEngine();
+            var ctx = engine.HandleRequest(new Request("GET", "/fake/route/with/some/parts", "http"));
+            ctx.Response.StatusCode.ShouldEqual(HttpStatusCode.OK);
+            ctx.Dispose();
         }
 
-        [Fact(Skip = "Used for ensuring memory isn't leaking only")]
+        [Fact]
+        public void can_make_request_from_module_with_dependencies()
+        {
+            var engine = this.bootstrapper.GetEngine();
+            var ctx = engine.HandleRequest(new Request("GET", "/with-dependency", "http"));
+            ctx.Response.StatusCode.ShouldEqual(HttpStatusCode.OK);
+            ctx.Dispose();
+        }
+
+        [Fact]
+        public void simultaneous_requests_use_different_module_instances()
+        {
+            var engine = this.bootstrapper.GetEngine();
+            var ctx1 = engine.HandleRequest(new Request("GET", "/fake/unique", "http"));
+            var ctx2 = engine.HandleRequest(new Request("GET", "/fake/unique", "http"));
+            var response1 = ctx1.Response.GetContentsAsString();
+            var response2= ctx2.Response.GetContentsAsString();
+            response1.ShouldNotEqual(response2);
+            ctx1.Dispose();
+            ctx2.Dispose();
+        }
+
+
+        [Fact(Skip = "For testing memory leaks only")]
         public void Check_windsor_memory_leak()
         { 
             var engine = this.bootstrapper.GetEngine();
             var ctx = engine.HandleRequest(new Request("GET", "/fake/route/with/some/parts", "http"));
             ctx.Dispose();
             Console.WriteLine("Start - " + GC.GetTotalMemory(false).ToString("#,###,##0") + " Bytes");
-            for (int i = 0; i < 10000; i++)
+            for (int i = 0; i < 1000000; i++)
             {
                 engine = this.bootstrapper.GetEngine();
                 ctx = engine.HandleRequest(new Request("GET", "/fake/route/with/some/parts", "http"));
