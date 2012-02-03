@@ -1,6 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using Nancy.BootStrappers.Windsor.Tests.Fakes;
@@ -23,7 +27,7 @@ namespace Nancy.Bootstrappers.Windsor.Tests
     }
 
 
-    public class FakeWindsorNancyAspNetBootstrapper : WindsorNancyAspNetBootstrapper
+    public class FakeWindsorNancyBootstrapper : WindsorNancyBootstrapper
     {
         public bool ApplicationContainerConfigured { get; set; }
 
@@ -55,11 +59,11 @@ namespace Nancy.Bootstrappers.Windsor.Tests
 
     public class WindsorNancyBootstrapperFixture
     {
-        private readonly FakeWindsorNancyAspNetBootstrapper bootstrapper;
+        private readonly FakeWindsorNancyBootstrapper bootstrapper;
 
         public WindsorNancyBootstrapperFixture()
         {
-            this.bootstrapper = new FakeWindsorNancyAspNetBootstrapper();
+            this.bootstrapper = new FakeWindsorNancyBootstrapper();
             this.bootstrapper.Initialise();
         }
 
@@ -110,7 +114,7 @@ namespace Nancy.Bootstrappers.Windsor.Tests
             this.bootstrapper.GetEngine();
             var defaults = NancyInternalConfiguration.WithOverrides(x => 
             {
-                x.ModuleKeyGenerator = typeof(NancyWindsorModuleKeyGenerator);
+                x.ModuleKeyGenerator = typeof(WindsorModuleKeyGenerator);
             });
             foreach (var registration in defaults.GetTypeRegistations().Where(x => x.RegistrationType != typeof(INancyEngine)))
             {
@@ -169,6 +173,24 @@ namespace Nancy.Bootstrappers.Windsor.Tests
                 ctx.Dispose();
             }
             Console.WriteLine("End - " + GC.GetTotalMemory(false).ToString("#,###,##0") + " Bytes");
+        }
+
+        [Fact(Skip = "For testing memory leaks with ASP.NET hosting only")]
+        public void Check_windsor_memory_leak_with_aspnet_hosting()
+        { 
+            var tasks = new List<Task>(100000);
+            for (var i = 0; i < 100000; i++)
+            {
+                tasks.Add(Task.Factory.StartNew(() => {
+                    try {
+                    var request = new WebClient();
+                    request.DownloadData("http://localhost/WebDemo/");
+                    request.DownloadData("http://localhost/WebDemo/dependency2/");
+                    request.DownloadData("http://localhost/WebDemo/dependency1/");
+                    } catch(Exception ex) {}
+                }));
+            }
+            Task.WaitAll(tasks.ToArray());
         }
     }
 }

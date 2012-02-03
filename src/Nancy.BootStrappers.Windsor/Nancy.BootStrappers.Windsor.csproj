@@ -52,8 +52,11 @@
     <Compile Include="..\..\dependencies\Nancy\src\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="NancyWindsorModuleKeyGenerator.cs" />
-    <Compile Include="WindsorNancyAspNetBootstrapper.cs" />
+    <Compile Include="NancyPerWebRequestScopeAccessor.cs" />
+    <Compile Include="WindsorModuleKeyGenerator.cs" />
+    <Compile Include="NancyRequestScopeInterceptor.cs" />
+    <Compile Include="NancyRequestScopeInterceptorSelector.cs" />
+    <Compile Include="WindsorNancyBootstrapper.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\dependencies\Nancy\src\Nancy\Nancy.csproj">

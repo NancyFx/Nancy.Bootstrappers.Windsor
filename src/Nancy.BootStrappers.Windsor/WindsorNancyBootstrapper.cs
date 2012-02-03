@@ -1,11 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Castle.Core;
-using Castle.DynamicProxy;
 using Castle.MicroKernel.Lifestyle;
 using Castle.MicroKernel.Lifestyle.Scoped;
-using Castle.MicroKernel.Proxy;
 using Castle.MicroKernel.Registration;
 using Castle.MicroKernel.Resolvers.SpecializedResolvers;
 using Castle.Windsor;
@@ -14,11 +11,12 @@ using Nancy.Routing;
 
 namespace Nancy.Bootstrappers.Windsor
 {
+
     /// <summary>
     /// This does not create a child container because in Windsor this leads to memory leaks.  Instead be sure to use
     /// PerWebRequest lifestyle, which means it must be hosted in an ASP.NET application.
     /// </summary>
-    public abstract class WindsorNancyAspNetBootstrapper : NancyBootstrapperBase<IWindsorContainer>
+    public abstract class WindsorNancyBootstrapper : NancyBootstrapperBase<IWindsorContainer>
     {
         bool _modulesRegistered;
 
@@ -28,7 +26,7 @@ namespace Nancy.Bootstrappers.Windsor
             {
                 return NancyInternalConfiguration.WithOverrides(c =>
                 {
-                    c.ModuleKeyGenerator = typeof(NancyWindsorModuleKeyGenerator);
+                    c.ModuleKeyGenerator = typeof(WindsorModuleKeyGenerator);
                 });
             }
         }
@@ -56,8 +54,8 @@ namespace Nancy.Bootstrappers.Windsor
             var container = new WindsorContainer();
             container.Kernel.Resolver.AddSubResolver(new CollectionResolver(container.Kernel, true));
             container.Register(Component.For<IWindsorContainer>().Instance(container));
-            container.Register(Component.For<NancyWindsorRequestScopeInterceptor>());
-            container.Kernel.ProxyFactory.AddInterceptorSelector(new NancyWindsorRequestScopeInterceptorSelector());
+            container.Register(Component.For<NancyRequestScopeInterceptor>());
+            container.Kernel.ProxyFactory.AddInterceptorSelector(new NancyRequestScopeInterceptorSelector());
             return container;
         }
 
@@ -66,7 +64,7 @@ namespace Nancy.Bootstrappers.Windsor
             if (_modulesRegistered) return;
             _modulesRegistered = true;
             var components = moduleRegistrationTypes.Select(r => Component.For(typeof (NancyModule))
-                .ImplementedBy(r.ModuleType).Named(r.ModuleKey).LifeStyle.Scoped())
+                .ImplementedBy(r.ModuleType).Named(r.ModuleKey).LifeStyle.Scoped<NancyPerWebRequestScopeAccessor>())
                 .Cast<IRegistration>().ToArray();
             this.ApplicationContainer.Register(components);
         }
@@ -130,42 +128,6 @@ namespace Nancy.Bootstrappers.Windsor
                 container.Register(Component.For(instanceRegistration.RegistrationType)
                     .Instance(instanceRegistration.Implementation));
             }
-        }
-    }
-
-    public class NancyWindsorRequestScopeInterceptor : IInterceptor
-    {
-        readonly IWindsorContainer _container;
-
-        public NancyWindsorRequestScopeInterceptor(IWindsorContainer container) 
-        {
-            _container = container;
-        }
-
-        public void Intercept(IInvocation invocation)
-        {
-            if (invocation.Method.Name != "HandleRequest")
-            { 
-                invocation.Proceed();
-                return;
-            }
-            using (_container.BeginScope())
-            { 
-                invocation.Proceed();
-            }
-        }
-    }
-
-    public class NancyWindsorRequestScopeInterceptorSelector : IModelInterceptorsSelector
-    {
-        public bool HasInterceptors(ComponentModel model)
-        {
-            return model.Implementation.GetInterfaces().Any(x => x == typeof(INancyEngine));
-        } 
-
-        public InterceptorReference[] SelectInterceptors(ComponentModel model, InterceptorReference[] interceptors)
-        {
-            return new[] { InterceptorReference.ForType<NancyWindsorRequestScopeInterceptor>() };
         }
     }
 }

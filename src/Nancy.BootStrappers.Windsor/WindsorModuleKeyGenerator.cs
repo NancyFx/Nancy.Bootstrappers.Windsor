@@ -6,7 +6,7 @@ namespace Nancy.Bootstrappers.Windsor
     /// <summary>
     ///   Windsor ModuleKey generator - handles Castle proxy classes correctly
     /// </summary>
-    public class NancyWindsorModuleKeyGenerator : IModuleKeyGenerator
+    public class WindsorModuleKeyGenerator : IModuleKeyGenerator
     {
         /// <summary>
         ///   Returns a string key for the given type

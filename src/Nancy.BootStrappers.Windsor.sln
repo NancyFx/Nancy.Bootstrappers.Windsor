@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nancy.BootStrappers.Windsor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nancy", "..\dependencies\Nancy\src\Nancy\Nancy.csproj", "{34576216-0DCA-4B0F-A0DC-9075E75A676F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebDemo", "WebDemo\WebDemo.csproj", "{E3EAC4A4-46BA-4FE6-9A2C-116A2A2CD598}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nancy.Hosting.Aspnet", "..\dependencies\Nancy\src\Nancy.Hosting.Aspnet\Nancy.Hosting.Aspnet.csproj", "{15B7F794-0BB2-4B66-AD78-4A951F1209B2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +43,22 @@ Global
 		{34576216-0DCA-4B0F-A0DC-9075E75A676F}.MonoRelease|Any CPU.Build.0 = MonoRelease|Any CPU
 		{34576216-0DCA-4B0F-A0DC-9075E75A676F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{34576216-0DCA-4B0F-A0DC-9075E75A676F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3EAC4A4-46BA-4FE6-9A2C-116A2A2CD598}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3EAC4A4-46BA-4FE6-9A2C-116A2A2CD598}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3EAC4A4-46BA-4FE6-9A2C-116A2A2CD598}.MonoDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3EAC4A4-46BA-4FE6-9A2C-116A2A2CD598}.MonoDebug|Any CPU.Build.0 = Debug|Any CPU
+		{E3EAC4A4-46BA-4FE6-9A2C-116A2A2CD598}.MonoRelease|Any CPU.ActiveCfg = Release|Any CPU
+		{E3EAC4A4-46BA-4FE6-9A2C-116A2A2CD598}.MonoRelease|Any CPU.Build.0 = Release|Any CPU
+		{E3EAC4A4-46BA-4FE6-9A2C-116A2A2CD598}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3EAC4A4-46BA-4FE6-9A2C-116A2A2CD598}.Release|Any CPU.Build.0 = Release|Any CPU
+		{15B7F794-0BB2-4B66-AD78-4A951F1209B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15B7F794-0BB2-4B66-AD78-4A951F1209B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15B7F794-0BB2-4B66-AD78-4A951F1209B2}.MonoDebug|Any CPU.ActiveCfg = MonoDebug|Any CPU
+		{15B7F794-0BB2-4B66-AD78-4A951F1209B2}.MonoDebug|Any CPU.Build.0 = MonoDebug|Any CPU
+		{15B7F794-0BB2-4B66-AD78-4A951F1209B2}.MonoRelease|Any CPU.ActiveCfg = MonoRelease|Any CPU
+		{15B7F794-0BB2-4B66-AD78-4A951F1209B2}.MonoRelease|Any CPU.Build.0 = MonoRelease|Any CPU
+		{15B7F794-0BB2-4B66-AD78-4A951F1209B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15B7F794-0BB2-4B66-AD78-4A951F1209B2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -2,11 +2,42 @@
 
 This is a bootstrapper for using Windsor with Nancy.  A couple of things are worth noting about this bootstrapper that differ from the others.  First, child containers are a bit of a faux paux with Windsor (if you are really interested you can read a bit about it [here][1], [here][2] and [here][3]) personally I don't fully understand why, but I've found it is virtually impossible to avoid a memory leak if you are creating one for each request.
 
-Instead we use Windsor 3.0's new Scoped Lifestyle. This scopes the resolution of dependencies that use the 'Scoped' lifestyle to the current call scope. Specifically we wrap the call to `INancyEngine.HandleRequest` using a dynamic proxy. When the call finishes the scope is disposed of.
+Instead we use Windsor 3.0's new Scoped Lifestyles. This scopes the resolution of dependencies that use the 'Scoped' lifestyle to the current call scope. Specifically we wrap the call to `INancyEngine.HandleRequest` using a dynamic proxy. When the call finishes the scope is disposed of.
 
-This way we no longer need to rely on the `PerWebRequest` lifestyle which only supports ASP.NET hosted applications. You are now free to use Windsor and host Nancy any way you like.
+Because the CallContext is not reliable when hosting using ASP.NET and IIS we fall back to the standard PerWebRequest scope if we detect HttpContext.Current. 
 
-Note: If you have additional dependencies/services that you would like scoped to the request (rather than per-application as singletons) you simply need to register them with `Lifstyle.Scoped()`. See [this page][4] with more details on Windsor's new scoped lifstyle and other new Windsor 3.0 features.
+To use this when registering your own dependencies simply use the `NancyScopeAccessor` class provided like this:
+
+```csharp
+protected override void ConfigureApplicationContainer(IWindsorContainer existingContainer)
+{
+  // This dependency uses the default singleton lifestyle
+  existingContainer.Register(Component.For<IApplicationDependency, ApplicationDependencyClass>());
+  // This dependency is registered per-web-request
+  existingContainer.Register(Component.For<IRequestDependency, RequestDependencyClass>().LifestyleScoped<NancyPerWebRequestScopeAccessor>());
+}
+```
+
+See [this page][4] with more details on Windsor's new scoped lifstyle and other new Windsor 3.0 features.
+
+Note that if you are hosting under ASP.NET then you will need to register the Castle PerWebRequestModule. There are two ways to do this:
+
+1. The new 3.0 way: Simply add Microsoft.Web.Infrastructure to your project and it will work automagically (see the WebDemo project for an example)
+
+2. The pre-3.0 way: Add this to your web.config
+You will need to add the following module to your web config however:
+
+```xml
+<httpModules>
+  <add name="PerWebRequest" type="Castle.MicroKernel.Lifestyle.PerWebRequestLifestyleModule" />
+</httpModules>
+
+<modules runAllManagedModulesForAllRequests="true">
+  <add name="PerWebRequest" type="Castle.MicroKernel.Lifestyle.PerWebRequestLifestyleModule" />
+</modules>
+```
+
+I highly recommend the new way, as web.config cruft is unsightly.
 
 [1]:http://hammett.castleproject.org/?p=296
 [2]:http://kozmic.pl/2010/06/01/castle-windsor-and-child-containers/
