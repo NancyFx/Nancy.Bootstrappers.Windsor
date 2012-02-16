@@ -1,9 +1,9 @@
-using System;
-using System.Security.Cryptography;
-using System.Text;
-
-namespace WebDemo
+namespace Nancy.Demo.Bootstrappers.Windsor
 {
+    using System;
+    using System.Security.Cryptography;
+    using System.Text;
+
     /// <summary>
     /// A module dependency that will have a per-request lifetime scope.
     /// </summary>

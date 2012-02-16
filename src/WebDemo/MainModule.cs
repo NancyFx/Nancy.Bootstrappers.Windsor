@@ -1,9 +1,9 @@
-using System;
-using Nancy;
-using Nancy.Routing;
-
-namespace WebDemo
+namespace Nancy.Demo.Bootstrappers.Windsor
 {
+    using System;
+    using Nancy;
+    using Nancy.Routing;
+
     public class MainModule : NancyModule
     {
         public MainModule(IRouteCacheProvider routeCacheProvider)

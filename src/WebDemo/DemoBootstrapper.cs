@@ -1,12 +1,9 @@
-﻿using System.Collections.Generic;
-using Castle.MicroKernel.Registration;
-using Castle.Windsor;
-using Nancy;
-using Nancy.Bootstrapper;
-using Nancy.Bootstrappers.Windsor;
-
-namespace WebDemo
+﻿namespace Nancy.Demo.Bootstrappers.Windsor
 {
+    using Castle.MicroKernel.Registration;
+    using Castle.Windsor;
+    using Nancy.Bootstrappers.Windsor;
+
     public class DemoBootstrapper : WindsorNancyBootstrapper
     {
         // Overriding this just to show how it works, not actually necessary as autoregister
@@ -17,11 +14,6 @@ namespace WebDemo
             // we just register our one known dependency as an application level singleton
             existingContainer.Register(Component.For<IApplicationDependency, ApplicationDependencyClass>());
             existingContainer.Register(Component.For<IRequestDependency, RequestDependencyClass>().LifestyleScoped<NancyPerWebRequestScopeAccessor>());
-        }
-
-        protected override void ApplicationStartup(IWindsorContainer container, IPipelines pipelines)
-        {
-            base.ApplicationStartup(container, pipelines);
         }
     }
 }

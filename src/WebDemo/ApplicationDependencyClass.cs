@@ -1,7 +1,7 @@
-using System;
-
-namespace WebDemo
+namespace Nancy.Demo.Bootstrappers.Windsor
 {
+    using System;
+
     /// <summary>
     /// A module dependency that will have an application lifetime scope.
     /// </summary>
