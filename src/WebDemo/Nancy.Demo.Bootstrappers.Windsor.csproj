@@ -10,8 +10,8 @@
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WebDemo</RootNamespace>
-    <AssemblyName>WebDemo</AssemblyName>
+    <RootNamespace>Nancy.Demo.Bootstrappers.Windsor</RootNamespace>
+    <AssemblyName>Nancy.Demo.Bootstrappers.Windsor</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <UseIISExpress>false</UseIISExpress>
   </PropertyGroup>
@@ -67,9 +67,7 @@
     <Compile Include="MainModule.cs" />
     <Compile Include="RequestDependencyClass.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="views\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="packages.config" />
   </ItemGroup>
@@ -82,9 +80,9 @@
       <Project>{34576216-0DCA-4B0F-A0DC-9075E75A676F}</Project>
       <Name>Nancy</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Nancy.BootStrappers.Windsor\Nancy.BootStrappers.Windsor.csproj">
+    <ProjectReference Include="..\Nancy.BootStrappers.Windsor\Nancy.Bootstrappers.Windsor.csproj">
       <Project>{F4F084BE-E3B3-4BC3-925A-5EB4FC7FA46B}</Project>
-      <Name>Nancy.BootStrappers.Windsor</Name>
+      <Name>Nancy.Bootstrappers.Windsor</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
@@ -93,7 +91,7 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>True</UseIIS>
+          <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>33161</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>

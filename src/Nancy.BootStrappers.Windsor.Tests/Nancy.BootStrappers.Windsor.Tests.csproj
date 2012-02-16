@@ -55,11 +55,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\dependencies\Nancy\src\Nancy.Tests\ShouldExtensions.cs">
-      <Link>ShouldExtensions.cs</Link>
+      <Link>Properties\ShouldExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\..\dependencies\Nancy\src\SharedAssemblyInfo.cs">
+      <Link>SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Fakes\FakeNancyModuleWithBasePath.cs" />
     <Compile Include="Fakes\FakeNancyModuleWithDependency.cs" />
-    <Compile Include="WindsorNancyBootStrapperFixture.cs" />
+    <Compile Include="FakeWindsorNancyBootstrapper.cs" />
+    <Compile Include="Helpers.cs" />
+    <Compile Include="WindsorNancyBootstrapperFixture.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Nancy.BootStrappers.Windsor\Nancy.Bootstrappers.Windsor.csproj">
@@ -74,9 +79,7 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
