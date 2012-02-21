@@ -1,8 +1,7 @@
-﻿using System;
-using Nancy;
-
-namespace WebDemo
+﻿namespace Nancy.Demo.Bootstrappers.Windsor
 {
+    using Nancy;
+
     public class DependencyModule : NancyModule
     {
         private readonly IApplicationDependency applicationDependency;

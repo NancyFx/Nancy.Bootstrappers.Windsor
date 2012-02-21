@@ -1,13 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nancy.BootStrappers.Windsor", "Nancy.BootStrappers.Windsor\Nancy.BootStrappers.Windsor.csproj", "{F4F084BE-E3B3-4BC3-925A-5EB4FC7FA46B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nancy.Bootstrappers.Windsor", "Nancy.BootStrappers.Windsor\Nancy.Bootstrappers.Windsor.csproj", "{F4F084BE-E3B3-4BC3-925A-5EB4FC7FA46B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nancy.BootStrappers.Windsor.Tests", "Nancy.BootStrappers.Windsor.Tests\Nancy.BootStrappers.Windsor.Tests.csproj", "{C490CBDA-78BA-42BF-98F4-CCA06D09532D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nancy.Bootstrappers.Windsor.Tests", "Nancy.BootStrappers.Windsor.Tests\Nancy.Bootstrappers.Windsor.Tests.csproj", "{C490CBDA-78BA-42BF-98F4-CCA06D09532D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nancy", "..\dependencies\Nancy\src\Nancy\Nancy.csproj", "{34576216-0DCA-4B0F-A0DC-9075E75A676F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebDemo", "WebDemo\WebDemo.csproj", "{E3EAC4A4-46BA-4FE6-9A2C-116A2A2CD598}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nancy.Demo.Bootstrappers.Windsor", "WebDemo\Nancy.Demo.Bootstrappers.Windsor.csproj", "{E3EAC4A4-46BA-4FE6-9A2C-116A2A2CD598}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nancy.Hosting.Aspnet", "..\dependencies\Nancy\src\Nancy.Hosting.Aspnet\Nancy.Hosting.Aspnet.csproj", "{15B7F794-0BB2-4B66-AD78-4A951F1209B2}"
 EndProject
