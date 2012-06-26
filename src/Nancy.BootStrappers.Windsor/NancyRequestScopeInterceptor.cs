@@ -1,17 +1,22 @@
-using System.Web;
-using Castle.DynamicProxy;
-using Castle.MicroKernel.Lifestyle;
-using Castle.Windsor;
-
 namespace Nancy.Bootstrappers.Windsor
 {
+    using System.Web;
+    using Castle.DynamicProxy;
+    using Castle.MicroKernel.Lifestyle;
+    using Castle.Windsor;
+
     public class NancyRequestScopeInterceptor : IInterceptor
     {
-        readonly IWindsorContainer _container;
+        private readonly IWindsorContainer container;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="NancyRequestScopeInterceptor"/> class,
+        /// with the provided <paramref name="container"/>.
+        /// </summary>
+        /// <param name="container">The container that should be scoped.</param>
         public NancyRequestScopeInterceptor(IWindsorContainer container) 
         {
-            _container = container;
+            this.container = container;
         }
 
         public void Intercept(IInvocation invocation)
@@ -22,7 +27,8 @@ namespace Nancy.Bootstrappers.Windsor
                 invocation.Proceed();
                 return;
             }
-            using (_container.BeginScope())
+
+            using (container.BeginScope())
             { 
                 invocation.Proceed();
             }
