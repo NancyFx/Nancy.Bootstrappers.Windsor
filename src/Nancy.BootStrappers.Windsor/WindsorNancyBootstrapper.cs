@@ -30,9 +30,14 @@ namespace Nancy.Bootstrappers.Windsor
             }
         }
 
-        protected override IEnumerable<IStartup> GetStartupTasks()
+        protected override IEnumerable<IApplicationStartup> GetApplicationStartupTasks()
         {
-            return this.ApplicationContainer.ResolveAll<IStartup>();
+            return this.ApplicationContainer.ResolveAll<IApplicationStartup>();
+        }
+
+        protected override IEnumerable<IApplicationRegistrations> GetApplicationRegistrationTasks()
+        {
+            return this.ApplicationContainer.ResolveAll<IApplicationRegistrations>();
         }
 
         protected override INancyEngine GetEngineInternal()
