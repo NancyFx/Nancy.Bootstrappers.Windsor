@@ -8,6 +8,7 @@ namespace Nancy.Bootstrappers.Windsor
     using Castle.MicroKernel.Registration;
     using Castle.MicroKernel.Resolvers.SpecializedResolvers;
     using Castle.Windsor;
+    using Diagnostics;
     using Nancy.Bootstrapper;
     using Nancy.Routing;
 
@@ -18,6 +19,15 @@ namespace Nancy.Bootstrappers.Windsor
     {
         private bool modulesRegistered;
         private IEnumerable<TypeRegistration> typeRegistrations;
+
+        /// <summary>
+        /// Gets the diagnostics for intialisation
+        /// </summary>
+        /// <returns>IDiagnostics implementation</returns>
+        protected override IDiagnostics GetDiagnostics()
+        {
+            return this.ApplicationContainer.Resolve<IDiagnostics>();
+        }
 
         /// <summary>
         /// Get all NancyModule implementation instances
