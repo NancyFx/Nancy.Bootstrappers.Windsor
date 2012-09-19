@@ -97,7 +97,7 @@ namespace Nancy.Bootstrappers.Windsor.Tests
 
             // Then
             this.bootstrapper.Container.Resolve<INancyEngine>()
-                .GetType().Name.ShouldEqual("INancyEngineProxy");
+                .GetType().Name.ShouldEqual("NancyEngineProxy");
         }
 
         [Fact]
@@ -144,8 +144,8 @@ namespace Nancy.Bootstrappers.Windsor.Tests
             response1.ShouldNotEqual(response2);
             ctx1.Dispose();
             ctx2.Dispose();
-        }
-
+        }        
+        
         [Fact(Skip = "For testing memory leaks only")]
         public void Check_windsor_memory_leak()
         { 
