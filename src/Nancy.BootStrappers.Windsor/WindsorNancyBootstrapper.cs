@@ -1,5 +1,3 @@
-using Castle.Facilities.TypedFactory;
-
 namespace Nancy.Bootstrappers.Windsor
 {
     using System;
@@ -9,9 +7,10 @@ namespace Nancy.Bootstrappers.Windsor
     using Castle.MicroKernel.Lifestyle.Scoped;
     using Castle.MicroKernel.Registration;
     using Castle.MicroKernel.Resolvers.SpecializedResolvers;
+    using Castle.Facilities.TypedFactory;
     using Castle.Windsor;
     using Diagnostics;
-    using Nancy.Bootstrapper;
+    using Bootstrapper;
 
     /// <summary>
     /// Nancy bootstrapper for the Windsor container.
@@ -205,18 +204,6 @@ namespace Nancy.Bootstrappers.Windsor
             }
         }
 
-        static void RegisterNewOrAddService(IWindsorContainer container, Type registrationType, Type implementationType)
-        {
-            var handler = container.Kernel.GetHandler(implementationType);
-            if (handler != null)
-            {
-                handler.ComponentModel.AddService(registrationType);
-                return;
-            }
-
-            container.Register(Component.For(implementationType, registrationType).ImplementedBy(implementationType));
-        }
-
         /// <summary>
         /// Register the given instances into the container
         /// </summary>
@@ -229,6 +216,18 @@ namespace Nancy.Bootstrappers.Windsor
                 container.Register(Component.For(instanceRegistration.RegistrationType)
                     .Instance(instanceRegistration.Implementation));
             }
+        }
+
+        private static void RegisterNewOrAddService(IWindsorContainer container, Type registrationType, Type implementationType)
+        {
+            var handler = container.Kernel.GetHandler(implementationType);
+            if (handler != null)
+            {
+                handler.ComponentModel.AddService(registrationType);
+                return;
+            }
+
+            container.Register(Component.For(implementationType, registrationType).ImplementedBy(implementationType));
         }
     }
 }

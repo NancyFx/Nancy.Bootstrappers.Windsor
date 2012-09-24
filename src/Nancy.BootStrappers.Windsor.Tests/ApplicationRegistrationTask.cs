@@ -1,8 +1,8 @@
-using System.Collections.Generic;
-using Nancy.Bootstrapper;
-
 namespace Nancy.Bootstrappers.Windsor.Tests
 {
+    using System.Collections.Generic;
+    using Bootstrapper;
+
     public class ApplicationRegistrationTask : IApplicationRegistrations
     {
         public IEnumerable<TypeRegistration> TypeRegistrations
