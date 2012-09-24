@@ -7,10 +7,10 @@ namespace Nancy.Bootstrappers.Windsor
     using Castle.MicroKernel.Lifestyle.Scoped;
     using Castle.MicroKernel.Registration;
     using Castle.MicroKernel.Resolvers.SpecializedResolvers;
+    using Castle.Facilities.TypedFactory;
     using Castle.Windsor;
     using Diagnostics;
-    using Nancy.Bootstrapper;
-    using Nancy.Routing;
+    using Bootstrapper;
 
     /// <summary>
     /// Nancy bootstrapper for the Windsor container.
@@ -18,8 +18,7 @@ namespace Nancy.Bootstrappers.Windsor
     public abstract class WindsorNancyBootstrapper : NancyBootstrapperBase<IWindsorContainer>
     {
         private bool modulesRegistered;
-        private IEnumerable<TypeRegistration> typeRegistrations;
-
+        
         /// <summary>
         /// Gets the diagnostics for intialisation
         /// </summary>
@@ -62,7 +61,8 @@ namespace Nancy.Bootstrappers.Windsor
             }
 
             var container = new WindsorContainer();
-            
+
+            container.AddFacility<TypedFactoryFacility>();
             container.Kernel.Resolver.AddSubResolver(new CollectionResolver(container.Kernel, true));
             container.Register(Component.For<IWindsorContainer>().Instance(container));
             container.Register(Component.For<NancyRequestScopeInterceptor>());
@@ -176,43 +176,31 @@ namespace Nancy.Bootstrappers.Windsor
         }
 
         /// <summary>
-        /// Register the default implementations of internally used types into the container as singletons
+        ///   Register the default implementations of internally used types into the container as singletons
         /// </summary>
-        /// <param name="container">Container to register into</param>
-        /// <param name="typeRegistrations">Type registrations to register</param>
+        /// <param name="container"> Container to register into </param>
+        /// <param name="typeRegistrations"> Type registrations to register </param>
         protected override void RegisterTypes(IWindsorContainer container, IEnumerable<TypeRegistration> typeRegistrations)
         {
-            this.typeRegistrations = typeRegistrations;
-            
-            container.Register(Component.For<Func<IRouteCache>>()
-                .UsingFactoryMethod(ctx => (Func<IRouteCache>) (ctx.Resolve<IRouteCache>)));
+            foreach (var typeRegistration in typeRegistrations)
+            {
+                RegisterNewOrAddService(container, typeRegistration.RegistrationType, typeRegistration.ImplementationType);
+            }
         }
 
         /// <summary>
-        /// Register the various collections into the container as singletons to later be resolved
-        /// by IEnumerable{Type} constructor dependencies.
+        ///   Register the various collections into the container as singletons to later be resolved by IEnumerable{Type} constructor dependencies.
         /// </summary>
-        /// <param name="container">Container to register into</param>
-        /// <param name="collectionTypeRegistrations">Collection type registrations to register</param>
+        /// <param name="container"> Container to register into </param>
+        /// <param name="collectionTypeRegistrations"> Collection type registrations to register </param>
         protected override void RegisterCollectionTypes(IWindsorContainer container, IEnumerable<CollectionTypeRegistration> collectionTypeRegistrations)
         {
-            var implementationTypes = collectionTypeRegistrations
-                .SelectMany(x => x.ImplementationTypes)
-                .Union(this.typeRegistrations.Select(x => x.ImplementationType))
-                .Distinct();
-
-            foreach (var implementationType in implementationTypes)
+            foreach (var typeRegistration in collectionTypeRegistrations)
             {
-                var servicesFromTypes = collectionTypeRegistrations
-                    .Where(x => x.ImplementationTypes.Contains(implementationType))
-                    .Select(x => x.RegistrationType);
-
-                var servicesFromCollectionTypes = this.typeRegistrations
-                    .Where(x => x.ImplementationType == implementationType)
-                    .Select(x => x.RegistrationType);
-
-               container.Register(Component.For(servicesFromCollectionTypes.Union(servicesFromTypes))
-                    .ImplementedBy(implementationType).LifeStyle.Singleton);
+                foreach (var implementationType in typeRegistration.ImplementationTypes)
+                {
+                    RegisterNewOrAddService(container, typeRegistration.RegistrationType, implementationType);
+                }
             }
         }
 
@@ -228,6 +216,18 @@ namespace Nancy.Bootstrappers.Windsor
                 container.Register(Component.For(instanceRegistration.RegistrationType)
                     .Instance(instanceRegistration.Implementation));
             }
+        }
+
+        private static void RegisterNewOrAddService(IWindsorContainer container, Type registrationType, Type implementationType)
+        {
+            var handler = container.Kernel.GetHandler(implementationType);
+            if (handler != null)
+            {
+                handler.ComponentModel.AddService(registrationType);
+                return;
+            }
+
+            container.Register(Component.For(implementationType, registrationType).ImplementedBy(implementationType));
         }
     }
 }
