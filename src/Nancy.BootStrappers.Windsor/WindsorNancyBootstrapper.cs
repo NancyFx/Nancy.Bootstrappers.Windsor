@@ -33,19 +33,19 @@ namespace Nancy.Bootstrappers.Windsor
         /// </summary>
         /// <param name="context">The current context</param>
         /// <returns>An <see cref="IEnumerable{T}"/> instance containing <see cref="NancyModule"/> instances.</returns>
-        public override IEnumerable<NancyModule> GetAllModules(NancyContext context)
+        public override IEnumerable<INancyModule> GetAllModules(NancyContext context)
         {
             var currentScope = 
                 CallContextLifetimeScope.ObtainCurrentScope();
 
             if (currentScope != null)
             { 
-                return this.ApplicationContainer.ResolveAll<NancyModule>();
+                return this.ApplicationContainer.ResolveAll<INancyModule>();
             }
 
             using (this.ApplicationContainer.BeginScope())
             {
-                return this.ApplicationContainer.ResolveAll<NancyModule>();
+                return this.ApplicationContainer.ResolveAll<INancyModule>();
             }
         }
 
@@ -104,19 +104,19 @@ namespace Nancy.Bootstrappers.Windsor
         /// <param name="moduleKey">Module key</param>
         /// <param name="context">The current context</param>
         /// <returns>The <see cref="NancyModule"/> instance that was retrived by the <paramref name="moduleKey"/> parameter.</returns>
-        public override NancyModule GetModuleByKey(string moduleKey, NancyContext context)
+        public override INancyModule GetModuleByKey(string moduleKey, NancyContext context)
         {
             var currentScope = 
                 CallContextLifetimeScope.ObtainCurrentScope();
 
             if (currentScope != null)
             { 
-                return this.ApplicationContainer.Resolve<NancyModule>(moduleKey);
+                return this.ApplicationContainer.Resolve<INancyModule>(moduleKey);
             }
 
             using (this.ApplicationContainer.BeginScope())
             {
-                return this.ApplicationContainer.Resolve<NancyModule>(moduleKey);
+                return this.ApplicationContainer.Resolve<INancyModule>(moduleKey);
             }
         }
 
@@ -157,7 +157,7 @@ namespace Nancy.Bootstrappers.Windsor
 
             this.modulesRegistered = true;
 
-            var components = moduleRegistrationTypes.Select(r => Component.For(typeof (NancyModule))
+            var components = moduleRegistrationTypes.Select(r => Component.For(typeof (INancyModule))
                 .ImplementedBy(r.ModuleType).Named(r.ModuleKey).LifeStyle.Scoped<NancyPerWebRequestScopeAccessor>())
                 .Cast<IRegistration>().ToArray();
 
