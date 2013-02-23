@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using Nancy.BootStrappers.Windsor.Tests.Fakes;
-using Nancy.Bootstrapper;
-using Nancy.Tests;
-using Xunit;
-
-namespace Nancy.Bootstrappers.Windsor.Tests
+﻿namespace Nancy.Bootstrappers.Windsor.Tests
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Net;
+    using System.Threading.Tasks;
+    using Nancy.BootStrappers.Windsor.Tests.Fakes;
+    using Nancy.Tests;
+    using Xunit;
+
     public class WindsorNancyBootstrapperFixture
     {
         private readonly FakeWindsorNancyBootstrapper bootstrapper;
@@ -21,7 +19,7 @@ namespace Nancy.Bootstrappers.Windsor.Tests
         }
 
         [Fact]
-        public void the_bootstrapper_returns_an_instance_of_INancyEngine()
+        public void Should_be_able_to_get_engine_instance()
         {
             // Given
             // When
@@ -33,7 +31,7 @@ namespace Nancy.Bootstrappers.Windsor.Tests
         }
 
         [Fact]
-        public void GetEngine_ConfigureApplicationContainer_Should_Be_Called()
+        public void Should_configure_application_container_when_getting_engine()
         {
             // Given
             // When
@@ -44,64 +42,7 @@ namespace Nancy.Bootstrappers.Windsor.Tests
         }
 
         [Fact]
-        public void GetAllModules_Returns_As_MultiInstance()
-        {
-            // Given
-            this.bootstrapper.GetEngine();
-            var context = new NancyContext();
-
-            // When
-            var output1 = this.bootstrapper.GetAllModules(context).FirstOrDefault(nm => nm.GetType() == typeof(FakeNancyModuleWithBasePath));
-            var output2 = this.bootstrapper.GetAllModules(context).FirstOrDefault(nm => nm.GetType() == typeof(FakeNancyModuleWithBasePath));
-
-            // Then
-            output1.ShouldNotBeNull();
-            output2.ShouldNotBeNull();
-            output1.ShouldNotBeSameAs(output2);
-        }
-
-        [Fact]
-        public void GetModuleByKey_Returns_As_MultiInstance()
-        {
-            // Given
-            this.bootstrapper.GetEngine();
-            var context = new NancyContext();
-
-            // When
-            var output1 = this.bootstrapper.GetModuleByKey(typeof(FakeNancyModuleWithBasePath).FullName, context);
-            var output2 = this.bootstrapper.GetModuleByKey(typeof(FakeNancyModuleWithBasePath).FullName, context);
-
-            // Then
-            output1.ShouldNotBeNull();
-            output2.ShouldNotBeNull();
-            output1.ShouldNotBeSameAs(output2);
-        }
-
-        [Fact]
-        public void GetEngine_Defaults_Registered_In_Container()
-        {
-            // Given
-            this.bootstrapper.GetEngine();
-            var defaults = NancyInternalConfiguration.WithOverrides(x => 
-            {
-                x.ModuleKeyGenerator = typeof(WindsorModuleKeyGenerator);
-            });
-
-            // When
-            foreach (var registration in defaults.GetTypeRegistations().Where(x => x.RegistrationType != typeof(INancyEngine)))
-            {
-                this.bootstrapper.Container.Resolve(registration.RegistrationType)
-                    .ShouldBeOfType(registration.ImplementationType);
-            }
-            // NancyEngine is being proxied by Castle to intercept the HandleRequest call
-
-            // Then
-            this.bootstrapper.Container.Resolve<INancyEngine>()
-                .GetType().Name.ShouldEqual("NancyEngineProxy");
-        }
-
-        [Fact]
-        public void can_make_request_from_module_with_no_dependency()
+        public void Should_be_able_to_make_request_from_module_with_no_dependency()
         {
             // Given
             var engine = this.bootstrapper.GetEngine();
@@ -110,12 +51,12 @@ namespace Nancy.Bootstrappers.Windsor.Tests
             var ctx = engine.HandleRequest(new Request("GET", "/fake/route/with/some/parts", "http"));
 
             // Then
-            ctx.Response.StatusCode.ShouldEqual(HttpStatusCode.OK);
+            ctx.Response.StatusCode.ShouldEqual(Nancy.HttpStatusCode.OK);
             ctx.Dispose();
         }
 
         [Fact]
-        public void can_make_request_from_module_with_dependencies()
+        public void Should_be_able_to_make_request_from_module_with_dependencies()
         {
             // Given
             var engine = this.bootstrapper.GetEngine();
@@ -124,12 +65,12 @@ namespace Nancy.Bootstrappers.Windsor.Tests
             var ctx = engine.HandleRequest(new Request("GET", "/with-dependency", "http"));
 
             // Then
-            ctx.Response.StatusCode.ShouldEqual(HttpStatusCode.OK);
+            ctx.Response.StatusCode.ShouldEqual(Nancy.HttpStatusCode.OK);
             ctx.Dispose();
         }
 
         [Fact]
-        public void simultaneous_requests_use_different_module_instances()
+        public void Should_be_able_to_make_simultaneous_requests_use_different_module_instances()
         {
             // Given
             var engine = this.bootstrapper.GetEngine();

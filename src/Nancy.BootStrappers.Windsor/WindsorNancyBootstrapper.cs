@@ -99,47 +99,24 @@ namespace Nancy.Bootstrappers.Windsor
         }
 
         /// <summary>
-        /// Retrieves a specific <see cref="NancyModule"/> implementation based on its key
+        /// Retrieves a specific <see cref="INancyModule"/> implementation - should be per-request lifetime
         /// </summary>
-        /// <param name="moduleKey">Module key</param>
+        /// <param name="moduleType">Module type</param>
         /// <param name="context">The current context</param>
-        /// <returns>The <see cref="NancyModule"/> instance that was retrived by the <paramref name="moduleKey"/> parameter.</returns>
-        public override INancyModule GetModuleByKey(string moduleKey, NancyContext context)
+        /// <returns>The <see cref="INancyModule"/> instance</returns>
+        public override INancyModule GetModule(Type moduleType, NancyContext context)
         {
             var currentScope = 
                 CallContextLifetimeScope.ObtainCurrentScope();
 
             if (currentScope != null)
-            { 
-                return this.ApplicationContainer.Resolve<INancyModule>(moduleKey);
+            {
+                return this.ApplicationContainer.Resolve<INancyModule>(moduleType.FullName);
             }
 
             using (this.ApplicationContainer.BeginScope())
             {
-                return this.ApplicationContainer.Resolve<INancyModule>(moduleKey);
-            }
-        }
-
-        /// <summary>
-        /// Get the moduleKey generator
-        /// </summary>
-        /// <returns>IModuleKeyGenerator instance</returns>
-        protected override IModuleKeyGenerator GetModuleKeyGenerator()
-        {
-            return this.ApplicationContainer.Resolve<IModuleKeyGenerator>();
-        }
-
-        /// <summary>
-        /// Nancy internal configuration
-        /// </summary>
-        protected override NancyInternalConfiguration InternalConfiguration
-        {
-            get
-            {
-                return NancyInternalConfiguration.WithOverrides(c =>
-                {
-                    c.ModuleKeyGenerator = typeof(WindsorModuleKeyGenerator);
-                });
+                return this.ApplicationContainer.Resolve<INancyModule>(moduleType.FullName);
             }
         }
 
@@ -158,7 +135,7 @@ namespace Nancy.Bootstrappers.Windsor
             this.modulesRegistered = true;
 
             var components = moduleRegistrationTypes.Select(r => Component.For(typeof (INancyModule))
-                .ImplementedBy(r.ModuleType).Named(r.ModuleKey).LifeStyle.Scoped<NancyPerWebRequestScopeAccessor>())
+                .ImplementedBy(r.ModuleType).Named(r.ModuleType.FullName).LifeStyle.Scoped<NancyPerWebRequestScopeAccessor>())
                 .Cast<IRegistration>().ToArray();
 
             this.ApplicationContainer.Register(components);

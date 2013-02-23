@@ -51,7 +51,6 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="NancyPerWebRequestScopeAccessor.cs" />
-    <Compile Include="WindsorModuleKeyGenerator.cs" />
     <Compile Include="NancyRequestScopeInterceptor.cs" />
     <Compile Include="NancyRequestScopeInterceptorSelector.cs" />
     <Compile Include="WindsorNancyBootstrapper.cs" />
