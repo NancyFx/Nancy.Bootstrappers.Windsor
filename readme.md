@@ -66,12 +66,7 @@ public class Bootstrapper : WindsorNancyBootstrapper
 
     protected override void ConfigureApplicationContainer(IWindsorContainer existingContainer)
     {
-        // Perform registation that should have an application lifetime
-    }
-
-    protected override void ConfigureRequestContainer(IWindsorContainer container, NancyContext context)
-    {
-        // Perform registrations that should have a request lifetime
+        // Perform registrations here
     }
 
     protected override void RequestStartup(IWindsorContainer container, IPipelines pipelines, NancyContext context)
