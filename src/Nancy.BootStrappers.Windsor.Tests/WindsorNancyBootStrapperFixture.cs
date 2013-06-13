@@ -1,4 +1,6 @@
-﻿namespace Nancy.Bootstrappers.Windsor.Tests
+﻿using System.Threading;
+
+namespace Nancy.Bootstrappers.Windsor.Tests
 {
     using System;
     using System.Collections.Generic;
@@ -85,9 +87,9 @@
             response1.ShouldNotEqual(response2);
             ctx1.Dispose();
             ctx2.Dispose();
-        }        
-        
-        [Fact(Skip = "For testing memory leaks only")]
+        }
+
+        [Fact(Skip = "For testing memory leaks")]
         public void Check_windsor_memory_leak()
         { 
             var engine = this.bootstrapper.GetEngine();
@@ -96,13 +98,31 @@
             
             Console.WriteLine("Start - " + GC.GetTotalMemory(false).ToString("#,###,##0") + " Bytes");
 
-            for (var i = 0; i < 1000000; i++)
+            for (var i = 0; i < 100000; i++)
             {
                 engine = this.bootstrapper.GetEngine();
                 ctx = engine.HandleRequest(new Request("GET", "/fake/route/with/some/parts", "http"));
                 ctx.Dispose();
             }
 
+            Console.WriteLine("End - " + GC.GetTotalMemory(false).ToString("#,###,##0") + " Bytes");
+        }
+
+        [Fact(Skip = "For testing memory leaks with Owin hosting")]
+        public void Check_windsor_memory_leak_async()
+        {
+            var engine = this.bootstrapper.GetEngine();
+            var ctx = engine.HandleRequest(new Request("GET", "/fake/route/with/some/parts", "http"));
+            ctx.Dispose();
+
+            Console.WriteLine("Start - " + GC.GetTotalMemory(false).ToString("#,###,##0") + " Bytes");
+
+            for (var i = 0; i < 100000; i++)
+            {
+                engine = this.bootstrapper.GetEngine();
+                engine.HandleRequest(new Request("GET", "/fake/route/with/some/parts", "http"), c => c.Dispose(), ex => {});
+            }
+            
             Console.WriteLine("End - " + GC.GetTotalMemory(false).ToString("#,###,##0") + " Bytes");
         }
 
