@@ -50,9 +50,6 @@
     <Compile Include="..\..\dependencies\Nancy\src\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="NancyPerWebRequestScopeAccessor.cs" />
-    <Compile Include="NancyRequestScopeInterceptor.cs" />
-    <Compile Include="NancyRequestScopeInterceptorSelector.cs" />
     <Compile Include="WindsorNancyBootstrapper.cs" />
   </ItemGroup>
   <ItemGroup>
