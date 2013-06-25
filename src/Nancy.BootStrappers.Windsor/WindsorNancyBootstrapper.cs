@@ -62,13 +62,22 @@ namespace Nancy.Bootstrappers.Windsor
 
             var container = new WindsorContainer();
 
+            ConfigureContainer(container);
+
+            return container;
+        }
+
+        /// <summary>
+        /// Configures all necessary dependencies for Nancy
+        /// </summary>
+        /// <param name="container">Container instance</param>
+        protected void ConfigureContainer(IWindsorContainer container)
+        {
             container.AddFacility<TypedFactoryFacility>();
             container.Kernel.Resolver.AddSubResolver(new CollectionResolver(container.Kernel, true));
             container.Register(Component.For<IWindsorContainer>().Instance(container));
             container.Register(Component.For<NancyRequestScopeInterceptor>());
             container.Kernel.ProxyFactory.AddInterceptorSelector(new NancyRequestScopeInterceptorSelector());
-
-            return container;
         }
 
         /// <summary>
