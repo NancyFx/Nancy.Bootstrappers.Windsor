@@ -108,24 +108,6 @@ namespace Nancy.Bootstrappers.Windsor.Tests
             Console.WriteLine("End - " + GC.GetTotalMemory(false).ToString("#,###,##0") + " Bytes");
         }
 
-        [Fact(Skip = "For testing memory leaks with Owin hosting")]
-        public void Check_windsor_memory_leak_async()
-        {
-            var engine = this.bootstrapper.GetEngine();
-            var ctx = engine.HandleRequest(new Request("GET", "/fake/route/with/some/parts", "http"));
-            ctx.Dispose();
-
-            Console.WriteLine("Start - " + GC.GetTotalMemory(false).ToString("#,###,##0") + " Bytes");
-
-            for (var i = 0; i < 100000; i++)
-            {
-                engine = this.bootstrapper.GetEngine();
-                engine.HandleRequest(new Request("GET", "/fake/route/with/some/parts", "http"), c => c.Dispose(), ex => {});
-            }
-            
-            Console.WriteLine("End - " + GC.GetTotalMemory(false).ToString("#,###,##0") + " Bytes");
-        }
-
         [Fact(Skip = "For testing memory leaks with ASP.NET hosting only")]
         public void Check_windsor_memory_leak_with_aspnet_hosting()
         { 

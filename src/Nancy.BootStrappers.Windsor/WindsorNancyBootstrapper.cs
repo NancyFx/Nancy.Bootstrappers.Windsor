@@ -3,8 +3,6 @@ namespace Nancy.Bootstrappers.Windsor
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Castle.MicroKernel.Lifestyle;
-    using Castle.MicroKernel.Lifestyle.Scoped;
     using Castle.MicroKernel.Registration;
     using Castle.MicroKernel.Resolvers.SpecializedResolvers;
     using Castle.Facilities.TypedFactory;
@@ -39,7 +37,7 @@ namespace Nancy.Bootstrappers.Windsor
             var allModules = this.ApplicationContainer.ResolveAll<INancyModule>();
             foreach (var module in allModules)
             {
-                context.Items[Guid.NewGuid().ToString()] = new ModuleReleaser(module, this.ApplicationContainer);
+                context.Items[Guid.NewGuid().ToString()] = new NancyModuleReleaser(module, this.ApplicationContainer);
             }
 
             return allModules;
@@ -101,7 +99,7 @@ namespace Nancy.Bootstrappers.Windsor
         public override INancyModule GetModule(Type moduleType, NancyContext context)
         {           
             var module = this.ApplicationContainer.Resolve<INancyModule>(moduleType.FullName);
-            context.Items[Guid.NewGuid().ToString()] = new ModuleReleaser(module, this.ApplicationContainer);
+            context.Items[Guid.NewGuid().ToString()] = new NancyModuleReleaser(module, this.ApplicationContainer);
             return module;
         }
 
@@ -192,24 +190,4 @@ namespace Nancy.Bootstrappers.Windsor
             container.Register(Component.For(implementationType, registrationType).ImplementedBy(implementationType));
         }
     }
-
-    public class ModuleReleaser : IDisposable
-    {
-        IWindsorContainer container;
-        object instance;
-
-        public ModuleReleaser(object instance, IWindsorContainer container)
-        {
-            this.instance = instance;
-            this.container = container;
-        }
-
-        public void Dispose()
-        {
-            container.Release(instance);
-            instance = null;
-            container = null;
-        }
-    }
-
 }
