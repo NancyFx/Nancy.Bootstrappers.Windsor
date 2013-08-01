@@ -3,8 +3,6 @@ namespace Nancy.Bootstrappers.Windsor
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using Castle.MicroKernel.Lifestyle;
-    using Castle.MicroKernel.Lifestyle.Scoped;
     using Castle.MicroKernel.Registration;
     using Castle.MicroKernel.Resolvers.SpecializedResolvers;
     using Castle.Facilities.TypedFactory;
@@ -35,18 +33,14 @@ namespace Nancy.Bootstrappers.Windsor
         /// <returns>An <see cref="IEnumerable{T}"/> instance containing <see cref="NancyModule"/> instances.</returns>
         public override IEnumerable<INancyModule> GetAllModules(NancyContext context)
         {
-            var currentScope = 
-                CallContextLifetimeScope.ObtainCurrentScope();
-
-            if (currentScope != null)
-            { 
-                return this.ApplicationContainer.ResolveAll<INancyModule>();
-            }
-
-            using (this.ApplicationContainer.BeginScope())
+            
+            var allModules = this.ApplicationContainer.ResolveAll<INancyModule>();
+            foreach (var module in allModules)
             {
-                return this.ApplicationContainer.ResolveAll<INancyModule>();
+                context.Items[Guid.NewGuid().ToString()] = new NancyModuleReleaser(module, this.ApplicationContainer);
             }
+
+            return allModules;
         }
 
         /// <summary>
@@ -65,8 +59,6 @@ namespace Nancy.Bootstrappers.Windsor
             container.AddFacility<TypedFactoryFacility>();
             container.Kernel.Resolver.AddSubResolver(new CollectionResolver(container.Kernel, true));
             container.Register(Component.For<IWindsorContainer>().Instance(container));
-            container.Register(Component.For<NancyRequestScopeInterceptor>());
-            container.Kernel.ProxyFactory.AddInterceptorSelector(new NancyRequestScopeInterceptorSelector());
 
             return container;
         }
@@ -105,19 +97,10 @@ namespace Nancy.Bootstrappers.Windsor
         /// <param name="context">The current context</param>
         /// <returns>The <see cref="INancyModule"/> instance</returns>
         public override INancyModule GetModule(Type moduleType, NancyContext context)
-        {
-            var currentScope = 
-                CallContextLifetimeScope.ObtainCurrentScope();
-
-            if (currentScope != null)
-            {
-                return this.ApplicationContainer.Resolve<INancyModule>(moduleType.FullName);
-            }
-
-            using (this.ApplicationContainer.BeginScope())
-            {
-                return this.ApplicationContainer.Resolve<INancyModule>(moduleType.FullName);
-            }
+        {           
+            var module = this.ApplicationContainer.Resolve<INancyModule>(moduleType.FullName);
+            context.Items[Guid.NewGuid().ToString()] = new NancyModuleReleaser(module, this.ApplicationContainer);
+            return module;
         }
 
         /// <summary>
@@ -135,7 +118,7 @@ namespace Nancy.Bootstrappers.Windsor
             this.modulesRegistered = true;
 
             var components = moduleRegistrationTypes.Select(r => Component.For(typeof (INancyModule))
-                .ImplementedBy(r.ModuleType).Named(r.ModuleType.FullName).LifeStyle.Scoped<NancyPerWebRequestScopeAccessor>())
+                .ImplementedBy(r.ModuleType).Named(r.ModuleType.FullName).LifestyleTransient())
                 .Cast<IRegistration>().ToArray();
 
             this.ApplicationContainer.Register(components);
@@ -196,7 +179,7 @@ namespace Nancy.Bootstrappers.Windsor
         }
 
         private static void RegisterNewOrAddService(IWindsorContainer container, Type registrationType, Type implementationType)
-        {
+        {            
             var handler = container.Kernel.GetHandler(implementationType);
             if (handler != null)
             {

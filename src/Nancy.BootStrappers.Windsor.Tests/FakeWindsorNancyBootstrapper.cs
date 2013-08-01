@@ -36,7 +36,7 @@ namespace Nancy.Bootstrappers.Windsor.Tests
 
             existingContainer.Register(
                 Component.For<Foo, IFoo>(),
-                Component.For<FakeDependency, IDependency>()
+                Component.For<FakeDependency, IDependency>().LifestyleBoundToNearest<INancyModule>()
                 );
         }
 

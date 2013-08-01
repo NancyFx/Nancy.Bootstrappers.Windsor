@@ -13,7 +13,7 @@
             // We don't call base because we don't want autoregister
             // we just register our one known dependency as an application level singleton
             existingContainer.Register(Component.For<IApplicationDependency, ApplicationDependencyClass>());
-            existingContainer.Register(Component.For<IRequestDependency, RequestDependencyClass>().LifestyleScoped<NancyPerWebRequestScopeAccessor>());
+            existingContainer.Register(Component.For<IRequestDependency, RequestDependencyClass>().LifestyleBoundToNearest<INancyModule>());
         }
     }
 }
