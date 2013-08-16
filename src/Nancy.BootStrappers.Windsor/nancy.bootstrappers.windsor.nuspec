@@ -14,8 +14,8 @@
     <projectUrl>http://nancyfx.org</projectUrl>
 	<dependencies>
       <dependency id="Nancy" />
-      <dependency id="Castle.Windsor" version="3.1.0" />
-    </dependencies> 
+      <dependency id="Castle.Windsor" version="3.2.1" />
+    </dependencies>
     <tags>Nancy Windsor</tags>
   </metadata>
   <files>
