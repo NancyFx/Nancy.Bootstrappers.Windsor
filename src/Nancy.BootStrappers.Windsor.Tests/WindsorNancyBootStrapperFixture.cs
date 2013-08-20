@@ -1,12 +1,9 @@
-﻿using System.Threading;
-
-namespace Nancy.Bootstrappers.Windsor.Tests
+﻿namespace Nancy.Bootstrappers.Windsor.Tests
 {
     using System;
     using System.Collections.Generic;
     using System.Net;
     using System.Threading.Tasks;
-    using Nancy.BootStrappers.Windsor.Tests.Fakes;
     using Nancy.Tests;
     using Xunit;
 
