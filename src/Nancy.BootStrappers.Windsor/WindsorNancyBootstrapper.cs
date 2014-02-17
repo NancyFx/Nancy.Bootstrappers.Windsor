@@ -11,6 +11,7 @@ namespace Nancy.Bootstrappers.Windsor
     using Castle.Windsor;
     using Diagnostics;
     using Bootstrapper;
+    using Routing;
 
     /// <summary>
     /// Nancy bootstrapper for the Windsor container.
@@ -150,6 +151,11 @@ namespace Nancy.Bootstrappers.Windsor
         protected override void RegisterBootstrapperTypes(IWindsorContainer applicationContainer)
         {
             applicationContainer.Register(Component.For<INancyModuleCatalog>().Instance(this));
+
+            // DefaultRouteCacheProvider doesn't have a parameterless constructor.
+            // It has a Func<IRouteCache> parameter, which Castle Windsor doesn't know how to handle
+            var routeCacheFactory = new Func<IRouteCache>(applicationContainer.Resolve<IRouteCache>);
+            applicationContainer.Register(Component.For<Func<IRouteCache>>().Instance(routeCacheFactory));
         }
 
         /// <summary>
