@@ -3,6 +3,8 @@ namespace Nancy.Bootstrappers.Windsor
     using System;
     using System.Collections.Generic;
     using System.Linq;
+
+    using Castle.Core;
     using Castle.MicroKernel.Lifestyle;
     using Castle.MicroKernel.Lifestyle.Scoped;
     using Castle.MicroKernel.Registration;
@@ -18,7 +20,7 @@ namespace Nancy.Bootstrappers.Windsor
     public abstract class WindsorNancyBootstrapper : NancyBootstrapperBase<IWindsorContainer>
     {
         private bool modulesRegistered;
-        
+
         /// <summary>
         /// Gets the diagnostics for intialisation
         /// </summary>
@@ -35,11 +37,11 @@ namespace Nancy.Bootstrappers.Windsor
         /// <returns>An <see cref="IEnumerable{T}"/> instance containing <see cref="NancyModule"/> instances.</returns>
         public override IEnumerable<INancyModule> GetAllModules(NancyContext context)
         {
-            var currentScope = 
+            var currentScope =
                 CallContextLifetimeScope.ObtainCurrentScope();
 
             if (currentScope != null)
-            { 
+            {
                 return this.ApplicationContainer.ResolveAll<INancyModule>();
             }
 
@@ -56,7 +58,7 @@ namespace Nancy.Bootstrappers.Windsor
         protected override IWindsorContainer GetApplicationContainer()
         {
             if (this.ApplicationContainer != null)
-            { 
+            {
                 return this.ApplicationContainer;
             }
 
@@ -106,7 +108,7 @@ namespace Nancy.Bootstrappers.Windsor
         /// <returns>The <see cref="INancyModule"/> instance</returns>
         public override INancyModule GetModule(Type moduleType, NancyContext context)
         {
-            var currentScope = 
+            var currentScope =
                 CallContextLifetimeScope.ObtainCurrentScope();
 
             if (currentScope != null)
@@ -134,7 +136,7 @@ namespace Nancy.Bootstrappers.Windsor
 
             this.modulesRegistered = true;
 
-            var components = moduleRegistrationTypes.Select(r => Component.For(typeof (INancyModule))
+            var components = moduleRegistrationTypes.Select(r => Component.For(typeof(INancyModule))
                 .ImplementedBy(r.ModuleType).Named(r.ModuleType.FullName).LifeStyle.Scoped<NancyPerWebRequestScopeAccessor>())
                 .Cast<IRegistration>().ToArray();
 
@@ -161,7 +163,7 @@ namespace Nancy.Bootstrappers.Windsor
         {
             foreach (var typeRegistration in typeRegistrations)
             {
-                RegisterNewOrAddService(container, typeRegistration.RegistrationType, typeRegistration.ImplementationType);
+                RegisterNewOrAddService(container, typeRegistration.RegistrationType, typeRegistration.ImplementationType, typeRegistration.Lifetime);
             }
         }
 
@@ -176,7 +178,7 @@ namespace Nancy.Bootstrappers.Windsor
             {
                 foreach (var implementationType in typeRegistration.ImplementationTypes)
                 {
-                    RegisterNewOrAddService(container, typeRegistration.RegistrationType, implementationType);
+                    RegisterNewOrAddService(container, typeRegistration.RegistrationType, implementationType, typeRegistration.Lifetime);
                 }
             }
         }
@@ -195,7 +197,7 @@ namespace Nancy.Bootstrappers.Windsor
             }
         }
 
-        private static void RegisterNewOrAddService(IWindsorContainer container, Type registrationType, Type implementationType)
+        private static void RegisterNewOrAddService(IWindsorContainer container, Type registrationType, Type implementationType, Lifetime lifetime)
         {
             var handler = container.Kernel.GetHandler(implementationType);
             if (handler != null)
@@ -204,7 +206,31 @@ namespace Nancy.Bootstrappers.Windsor
                 return;
             }
 
-            container.Register(Component.For(implementationType, registrationType).ImplementedBy(implementationType));
+            var lifeStyle = LifestyleType.Singleton;
+
+            switch (lifetime)
+            {
+                case Lifetime.Transient:
+                    container.Register(
+                        Component.For(implementationType, registrationType)
+                            .LifestyleTransient()
+                            .ImplementedBy(implementationType));
+                    break;
+                case Lifetime.Singleton:
+                    container.Register(
+                        Component.For(implementationType, registrationType)
+                            .LifestyleSingleton()
+                            .ImplementedBy(implementationType));
+                            break;
+                case Lifetime.PerRequest:
+                    container.Register(
+                        Component.For(implementationType, registrationType)
+                            .LifestyleScoped(typeof(NancyPerWebRequestScopeAccessor))
+                            .ImplementedBy(implementationType));
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("lifetime");
+            }
         }
     }
 }
