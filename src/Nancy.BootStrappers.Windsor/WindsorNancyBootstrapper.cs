@@ -92,6 +92,23 @@ namespace Nancy.Bootstrappers.Windsor
         }
 
         /// <summary>
+        /// Gets all registered request startup tasks
+        /// </summary>
+        /// <returns>An <see cref="IEnumerable{T}"/> instance containing <see cref="IRequestStartup"/> instances.</returns>
+        protected override IEnumerable<IRequestStartup> RegisterAndGetRequestStartupTasks(IWindsorContainer container, Type[] requestStartupTypes)
+        {
+            foreach (var requestStartupType in requestStartupTypes)
+            {
+                container.Register(
+                    Component.For(requestStartupType, typeof(IRequestStartup))
+                        .LifestyleScoped(typeof(NancyPerWebRequestScopeAccessor))
+                        .ImplementedBy(requestStartupType));
+            }
+
+            return container.ResolveAll<IRequestStartup>();
+        }
+
+        /// <summary>
         /// Resolve INancyEngine
         /// </summary>
         /// <returns>INancyEngine implementation</returns>
