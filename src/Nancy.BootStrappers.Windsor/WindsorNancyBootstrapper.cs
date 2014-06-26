@@ -64,14 +64,29 @@ namespace Nancy.Bootstrappers.Windsor
             }
 
             var container = new WindsorContainer();
-
-            container.AddFacility<TypedFactoryFacility>();
-            container.Kernel.Resolver.AddSubResolver(new CollectionResolver(container.Kernel, true));
-            container.Register(Component.For<IWindsorContainer>().Instance(container));
-            container.Register(Component.For<NancyRequestScopeInterceptor>());
-            container.Kernel.ProxyFactory.AddInterceptorSelector(new NancyRequestScopeInterceptorSelector());
-
             return container;
+        }
+
+        /// <summary>
+        /// Configures the container for use with Nancy.
+        /// </summary>
+        /// <param name="existingContainer">
+        /// An existing container.
+        /// </param>
+        protected override void ConfigureApplicationContainer(IWindsorContainer existingContainer)
+        {
+            var factoryType = typeof(TypedFactoryFacility);
+            if (!existingContainer.Kernel.GetFacilities()
+                .Any(x => x.GetType() == factoryType))
+            {
+                existingContainer.AddFacility<TypedFactoryFacility>();
+            }
+            existingContainer.Kernel.Resolver.AddSubResolver(new CollectionResolver(existingContainer.Kernel, true));
+            existingContainer.Register(Component.For<IWindsorContainer>().Instance(existingContainer));
+            existingContainer.Register(Component.For<NancyRequestScopeInterceptor>());
+            existingContainer.Kernel.ProxyFactory.AddInterceptorSelector(new NancyRequestScopeInterceptorSelector());
+
+            base.ConfigureApplicationContainer(existingContainer);
         }
 
         /// <summary>
