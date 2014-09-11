@@ -86,6 +86,14 @@ namespace Nancy.Bootstrappers.Windsor
             existingContainer.Register(Component.For<NancyRequestScopeInterceptor>());
             existingContainer.Kernel.ProxyFactory.AddInterceptorSelector(new NancyRequestScopeInterceptorSelector());
 
+            foreach (var requestStartupType in this.RequestStartupTasks)
+            {
+              this.ApplicationContainer.Register(
+                Component.For(requestStartupType, typeof(IRequestStartup))
+                  .LifestyleScoped(typeof(NancyPerWebRequestScopeAccessor))
+                  .ImplementedBy(requestStartupType));
+            }
+
             base.ConfigureApplicationContainer(existingContainer);
         }
 
@@ -113,14 +121,6 @@ namespace Nancy.Bootstrappers.Windsor
         /// <returns>An <see cref="IEnumerable{T}"/> instance containing <see cref="IRequestStartup"/> instances.</returns>
         protected override IEnumerable<IRequestStartup> RegisterAndGetRequestStartupTasks(IWindsorContainer container, Type[] requestStartupTypes)
         {
-            foreach (var requestStartupType in requestStartupTypes)
-            {
-                container.Register(
-                    Component.For(requestStartupType, typeof(IRequestStartup))
-                        .LifestyleScoped(typeof(NancyPerWebRequestScopeAccessor))
-                        .ImplementedBy(requestStartupType));
-            }
-
             return container.ResolveAll<IRequestStartup>();
         }
 
