@@ -7,20 +7,31 @@ namespace Nancy.Bootstrappers.Windsor.Tests
 
     public class FakeWindsorNancyBootstrapper : WindsorNancyBootstrapper
     {
-        private readonly NancyInternalConfiguration configuration;
+      private readonly WindsorContainer externalContainer;
+      private readonly NancyInternalConfiguration configuration;
 
         public bool ApplicationContainerConfigured { get; set; }
 
         public bool RequestContainerConfigured { get; set; }
 
         public FakeWindsorNancyBootstrapper()
-            : this(null)
+            : this(configuration: null)
         {
         }
 
         public FakeWindsorNancyBootstrapper(NancyInternalConfiguration configuration)
         {
             this.configuration = configuration;
+        }
+
+        public FakeWindsorNancyBootstrapper(WindsorContainer windsorContainer)
+        {
+            this.externalContainer = windsorContainer;
+        }
+
+        protected override IWindsorContainer GetApplicationContainer()
+        {
+             return externalContainer ?? base.GetApplicationContainer();
         }
 
         protected override void ApplicationStartup(IWindsorContainer container, IPipelines pipelines)
