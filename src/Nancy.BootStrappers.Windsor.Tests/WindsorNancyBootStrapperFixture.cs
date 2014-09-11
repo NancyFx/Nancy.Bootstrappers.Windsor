@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Net;
     using System.Threading.Tasks;
+    using Castle.Windsor;
     using Nancy.BootStrappers.Windsor.Tests.Fakes;
     using Nancy.Tests;
     using Xunit;
@@ -16,6 +17,21 @@
         {
             this.bootstrapper = new FakeWindsorNancyBootstrapper();
             this.bootstrapper.Initialise();
+        }
+
+        [Fact]
+        public void Should_be_able_to_get_engine_when_providing_application_container_exteranlly()
+        {
+            // Given
+            var bootstrapperWithExternalContainer = new FakeWindsorNancyBootstrapper(new WindsorContainer());
+            bootstrapperWithExternalContainer.Initialise();
+          
+            // When
+            var result = bootstrapperWithExternalContainer.GetEngine();
+          
+            // Then
+            result.ShouldNotBeNull();
+            result.ShouldBeOfType<INancyEngine>();
         }
 
         [Fact]
