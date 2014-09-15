@@ -61,4 +61,11 @@ namespace Nancy.Bootstrappers.Windsor.Tests
             get { return this.configuration ?? base.InternalConfiguration; }
         }
     }
+
+    public class FakeStartupTask : IRequestStartup
+    {
+        public void Initialize(IPipelines pipelines, NancyContext context)
+        {
+        }
+    }
 }
