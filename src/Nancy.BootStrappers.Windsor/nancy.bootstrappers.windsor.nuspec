@@ -12,9 +12,9 @@
     <iconUrl>http://nancyfx.org/nancy-nuget.png</iconUrl>
     <licenseUrl>https://github.com/NancyFx/Nancy/blob/master/license.txt</licenseUrl>
     <projectUrl>http://nancyfx.org</projectUrl>
-	<dependencies>
+    <dependencies>
       <dependency id="Nancy" />
-      <dependency id="Castle.Windsor" version="3.2.1" />
+      <dependency id="Castle.Windsor" version="3.3.0" />
     </dependencies>
     <tags>Nancy Windsor</tags>
   </metadata>
