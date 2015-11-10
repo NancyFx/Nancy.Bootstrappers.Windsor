@@ -1,30 +1,13 @@
 namespace Nancy.Bootstrappers.Windsor.Tests
 {
-    using System.Collections.Generic;
     using Bootstrapper;
 
-    public class ApplicationRegistrationTask : IApplicationRegistrations
+    public class ApplicationRegistrationTask : Registrations
     {
-        public IEnumerable<TypeRegistration> TypeRegistrations
+        public ApplicationRegistrationTask()
         {
-            get
-            {
-                return new[]
-                         {
-                             new TypeRegistration(typeof(IType1), typeof(Type)),
-                             new TypeRegistration(typeof(IType2), typeof(Type))
-                         };
-            }
-        }
-
-        public IEnumerable<CollectionTypeRegistration> CollectionTypeRegistrations
-        {
-            get { return null; }
-        }
-
-        public IEnumerable<InstanceRegistration> InstanceRegistrations
-        {
-            get { return null; }
+            Register<IType1>(typeof(Type));
+            Register<IType2>(typeof(Type));
         }
 
         public interface IType1 { }
