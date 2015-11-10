@@ -1,5 +1,3 @@
-using Nancy.Configuration;
-
 namespace Nancy.Bootstrappers.Windsor
 {
     using System;
@@ -13,6 +11,7 @@ namespace Nancy.Bootstrappers.Windsor
     using Castle.MicroKernel.Resolvers.SpecializedResolvers;
     using Castle.Facilities.TypedFactory;
     using Castle.Windsor;
+    using Configuration;
     using Diagnostics;
     using Bootstrapper;
     using Routing;
