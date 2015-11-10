@@ -11,6 +11,7 @@ namespace Nancy.Bootstrappers.Windsor
     using Castle.MicroKernel.Resolvers.SpecializedResolvers;
     using Castle.Facilities.TypedFactory;
     using Castle.Windsor;
+    using Configuration;
     using Diagnostics;
     using Bootstrapper;
     using Routing;
@@ -113,6 +114,25 @@ namespace Nancy.Bootstrappers.Windsor
         protected override IEnumerable<IApplicationStartup> GetApplicationStartupTasks()
         {
             return this.ApplicationContainer.ResolveAll<IApplicationStartup>();
+        }
+
+        /// <summary>
+        /// Gets the <see cref="INancyEnvironmentConfigurator"/> used by th.
+        /// </summary>
+        /// <returns>An <see cref="INancyEnvironmentConfigurator"/> instance.</returns>
+        protected override INancyEnvironmentConfigurator GetEnvironmentConfigurator()
+        {
+            return this.ApplicationContainer.Resolve<INancyEnvironmentConfigurator>();
+        }
+
+        /// <summary>
+        /// Registers an <see cref="INancyEnvironment"/> instance in the container.
+        /// </summary>
+        /// <param name="container">The container to register into.</param>
+        /// <param name="environment">The <see cref="INancyEnvironment"/> instance to register.</param>
+        protected override void RegisterNancyEnvironment(IWindsorContainer container, INancyEnvironment environment)
+        {
+            container.Register(Component.For<INancyEnvironment>().Instance(environment));
         }
 
         /// <summary>

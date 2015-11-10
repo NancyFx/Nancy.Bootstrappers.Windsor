@@ -19,8 +19,8 @@
     <tags>Nancy Windsor</tags>
   </metadata>
   <files>
-    <file src="build\binaries\Nancy.Bootstrappers.Windsor.dll" target="lib\net40" />
-    <file src="build\binaries\Nancy.Bootstrappers.Windsor.pdb" target="lib\net40" />
+    <file src="build\binaries\Nancy.Bootstrappers.Windsor.dll" target="lib\net45" />
+    <file src="build\binaries\Nancy.Bootstrappers.Windsor.pdb" target="lib\net45" />
     <file src="src\Nancy.Bootstrappers.Windsor\**\*.cs" target="src" />
   </files>
 </package>
