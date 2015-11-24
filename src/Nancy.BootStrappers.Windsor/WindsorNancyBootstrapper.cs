@@ -3,7 +3,6 @@ namespace Nancy.Bootstrappers.Windsor
     using System;
     using System.Collections.Generic;
     using System.Linq;
-
     using Castle.Core;
     using Castle.MicroKernel.Lifestyle;
     using Castle.MicroKernel.Lifestyle.Scoped;
@@ -123,6 +122,16 @@ namespace Nancy.Bootstrappers.Windsor
         protected override INancyEnvironmentConfigurator GetEnvironmentConfigurator()
         {
             return this.ApplicationContainer.Resolve<INancyEnvironmentConfigurator>();
+        }
+
+        /// <summary>
+        /// Get the <see cref="INancyEnvironment" /> instance.
+        /// </summary>
+        /// <returns>An configured <see cref="INancyEnvironment" /> instance.</returns>
+        /// <remarks>The boostrapper must be initialised (<see cref="INancyBootstrapper.Initialise" />) prior to calling this.</remarks>
+        public override INancyEnvironment GetEnvironment()
+        {
+            return this.ApplicationContainer.Resolve<INancyEnvironment>();
         }
 
         /// <summary>
