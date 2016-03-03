@@ -2,7 +2,7 @@ using System;
 
 namespace Nancy.BootStrappers.Windsor.Tests.Fakes
 {
-    public class FakeNancyModuleWithBasePath : NancyModule
+    public class FakeNancyModuleWithBasePath : LegacyNancyModule
     {
         string _id;
 

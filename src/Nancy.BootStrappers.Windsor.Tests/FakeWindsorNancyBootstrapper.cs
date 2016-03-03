@@ -1,5 +1,6 @@
 namespace Nancy.Bootstrappers.Windsor.Tests
 {
+    using System;
     using BootStrappers.Windsor.Tests.Fakes;
     using Bootstrapper;
     using Castle.MicroKernel.Registration;
@@ -8,7 +9,7 @@ namespace Nancy.Bootstrappers.Windsor.Tests
     public class FakeWindsorNancyBootstrapper : WindsorNancyBootstrapper
     {
       private readonly WindsorContainer externalContainer;
-      private readonly NancyInternalConfiguration configuration;
+      private readonly Func<ITypeCatalog, NancyInternalConfiguration> configuration;
 
         public bool ApplicationContainerConfigured { get; set; }
 
@@ -19,7 +20,7 @@ namespace Nancy.Bootstrappers.Windsor.Tests
         {
         }
 
-        public FakeWindsorNancyBootstrapper(NancyInternalConfiguration configuration)
+        public FakeWindsorNancyBootstrapper(Func<ITypeCatalog, NancyInternalConfiguration> configuration)
         {
             this.configuration = configuration;
         }
@@ -56,7 +57,7 @@ namespace Nancy.Bootstrappers.Windsor.Tests
             get { return this.ApplicationContainer; }
         }
 
-        protected override NancyInternalConfiguration InternalConfiguration
+        protected override Func<ITypeCatalog, NancyInternalConfiguration> InternalConfiguration
         {
             get { return this.configuration ?? base.InternalConfiguration; }
         }

@@ -25,10 +25,10 @@
             // Given
             var bootstrapperWithExternalContainer = new FakeWindsorNancyBootstrapper(new WindsorContainer());
             bootstrapperWithExternalContainer.Initialise();
-          
+
             // When
             var result = bootstrapperWithExternalContainer.GetEngine();
-          
+
             // Then
             result.ShouldNotBeNull();
             result.ShouldBeOfType<INancyEngine>();
@@ -58,13 +58,13 @@
         }
 
         [Fact]
-        public void Should_be_able_to_make_request_from_module_with_no_dependency()
+        public async Task Should_be_able_to_make_request_from_module_with_no_dependency()
         {
             // Given
             var engine = this.bootstrapper.GetEngine();
 
             // When
-            var ctx = engine.HandleRequest(new Request("GET", "/fake/route/with/some/parts", "http"));
+            var ctx = await engine.HandleRequest(new Request("GET", "/fake/route/with/some/parts", "http"));
 
             // Then
             ctx.Response.StatusCode.ShouldEqual(Nancy.HttpStatusCode.OK);
@@ -72,13 +72,13 @@
         }
 
         [Fact]
-        public void Should_be_able_to_make_request_from_module_with_dependencies()
+        public async Task Should_be_able_to_make_request_from_module_with_dependencies()
         {
             // Given
             var engine = this.bootstrapper.GetEngine();
-            
+
             // When
-            var ctx = engine.HandleRequest(new Request("GET", "/with-dependency", "http"));
+            var ctx = await engine.HandleRequest(new Request("GET", "/with-dependency", "http"));
 
             // Then
             ctx.Response.StatusCode.ShouldEqual(Nancy.HttpStatusCode.OK);
@@ -86,12 +86,12 @@
         }
 
         [Fact]
-        public void Should_be_able_to_make_simultaneous_requests_use_different_module_instances()
+        public async Task Should_be_able_to_make_simultaneous_requests_use_different_module_instances()
         {
             // Given
             var engine = this.bootstrapper.GetEngine();
-            var ctx1 = engine.HandleRequest(new Request("GET", "/fake/unique", "http"));
-            var ctx2 = engine.HandleRequest(new Request("GET", "/fake/unique", "http"));
+            var ctx1 = await engine.HandleRequest(new Request("GET", "/fake/unique", "http"));
+            var ctx2 = await engine.HandleRequest(new Request("GET", "/fake/unique", "http"));
 
             // When
             var response1 = ctx1.Response.GetContentsAsString();
@@ -101,15 +101,15 @@
             response1.ShouldNotEqual(response2);
             ctx1.Dispose();
             ctx2.Dispose();
-        }        
-        
+        }
+
         [Fact(Skip = "For testing memory leaks only")]
         public void Check_windsor_memory_leak()
-        { 
+        {
             var engine = this.bootstrapper.GetEngine();
             var ctx = engine.HandleRequest(new Request("GET", "/fake/route/with/some/parts", "http"));
             ctx.Dispose();
-            
+
             Console.WriteLine("Start - " + GC.GetTotalMemory(false).ToString("#,###,##0") + " Bytes");
 
             for (var i = 0; i < 1000000; i++)
@@ -124,7 +124,7 @@
 
         [Fact(Skip = "For testing memory leaks with ASP.NET hosting only")]
         public void Check_windsor_memory_leak_with_aspnet_hosting()
-        { 
+        {
             var tasks = new List<Task>(100000);
 
             for (var i = 0; i < 100000; i++)

@@ -26,7 +26,7 @@
         }
     }
 
-    public class FakeNancyModuleWithDependency : NancyModule
+    public class FakeNancyModuleWithDependency : LegacyNancyModule
     {
         public IDependency Dependency { get; set; }
         public IFoo FooDependency { get; set; }
