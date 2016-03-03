@@ -61,13 +61,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\dependencies\Nancy\src\Nancy.Tests\ShouldExtensions.cs">
+    <Compile Include="..\..\dependencies\Nancy\test\Nancy.Tests\ShouldExtensions.cs">
       <Link>ShouldExtensions.cs</Link>
     </Compile>
-    <Compile Include="..\..\dependencies\Nancy\src\Nancy.Tests\Unit\Bootstrapper\Base\BootstrapperBaseFixtureBase.cs">
+    <Compile Include="..\..\dependencies\Nancy\test\Nancy.Tests\Unit\Bootstrapper\Base\BootstrapperBaseFixtureBase.cs">
       <Link>BootstrapperBaseFixtureBase.cs</Link>
     </Compile>
-    <Compile Include="..\..\dependencies\Nancy\src\SharedAssemblyInfo.cs">
+    <Compile Include="..\..\dependencies\Nancy\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ApplicationRegistrationTask.cs" />
@@ -83,7 +83,7 @@
       <Project>{F4F084BE-E3B3-4BC3-925A-5EB4FC7FA46B}</Project>
       <Name>Nancy.Bootstrappers.Windsor</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\dependencies\Nancy\src\Nancy\Nancy.csproj">
+    <ProjectReference Include="..\..\dependencies\Nancy\src\Nancy.MSBuild\Nancy.csproj">
       <Project>{34576216-0DCA-4B0F-A0DC-9075E75A676F}</Project>
       <Name>Nancy</Name>
     </ProjectReference>
@@ -94,7 +94,7 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
