@@ -9,7 +9,7 @@
     <ProjectGuid>{C490CBDA-78BA-42BF-98F4-CCA06D09532D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Nancy.BootStrappers.Windsor.Tests</RootNamespace>
+    <RootNamespace>Nancy.Bootstrappers.Windsor.Tests</RootNamespace>
     <AssemblyName>Nancy.BootStrappers.Windsor.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
