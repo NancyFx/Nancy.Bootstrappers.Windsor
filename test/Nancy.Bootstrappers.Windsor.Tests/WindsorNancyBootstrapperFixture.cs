@@ -5,7 +5,7 @@
     using System.Net;
     using System.Threading.Tasks;
     using Castle.Windsor;
-    using Nancy.BootStrappers.Windsor.Tests.Fakes;
+    using Nancy.Bootstrappers.Windsor.Tests.Fakes;
     using Nancy.Tests;
     using Xunit;
 

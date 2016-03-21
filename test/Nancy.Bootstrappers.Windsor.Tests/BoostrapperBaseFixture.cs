@@ -1,5 +1,5 @@
 #if !__MonoCS__
-namespace Nancy.BootStrappers.Windsor.Tests
+namespace Nancy.Bootstrappers.Windsor.Tests
 {
     using Bootstrapper;
     using Bootstrappers.Windsor;
