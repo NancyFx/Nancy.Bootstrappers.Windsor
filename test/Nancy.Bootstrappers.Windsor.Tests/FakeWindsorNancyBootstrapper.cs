@@ -1,7 +1,7 @@
 namespace Nancy.Bootstrappers.Windsor.Tests
 {
     using System;
-    using BootStrappers.Windsor.Tests.Fakes;
+    using Bootstrappers.Windsor.Tests.Fakes;
     using Bootstrapper;
     using Castle.MicroKernel.Registration;
     using Castle.Windsor;

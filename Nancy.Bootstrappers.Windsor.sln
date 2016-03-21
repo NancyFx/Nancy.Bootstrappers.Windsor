@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nancy.Bootstrappers.Windsor", "src\Nancy.BootStrappers.Windsor.MSBuild\Nancy.Bootstrappers.Windsor.csproj", "{F4F084BE-E3B3-4BC3-925A-5EB4FC7FA46B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nancy.Bootstrappers.Windsor", "src\Nancy.Bootstrappers.Windsor.MSBuild\Nancy.Bootstrappers.Windsor.csproj", "{F4F084BE-E3B3-4BC3-925A-5EB4FC7FA46B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nancy.Bootstrappers.Windsor.Tests", "test\Nancy.BootStrappers.Windsor.Tests.MSBuild\Nancy.Bootstrappers.Windsor.Tests.csproj", "{C490CBDA-78BA-42BF-98F4-CCA06D09532D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nancy.Bootstrappers.Windsor.Tests", "test\Nancy.Bootstrappers.Windsor.Tests.MSBuild\Nancy.Bootstrappers.Windsor.Tests.csproj", "{C490CBDA-78BA-42BF-98F4-CCA06D09532D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nancy", "dependencies\Nancy\src\Nancy.MSBuild\Nancy.csproj", "{34576216-0DCA-4B0F-A0DC-9075E75A676F}"
 EndProject

@@ -1,6 +1,6 @@
 using System;
 
-namespace Nancy.BootStrappers.Windsor.Tests.Fakes
+namespace Nancy.Bootstrappers.Windsor.Tests.Fakes
 {
     public class FakeNancyModuleWithBasePath : LegacyNancyModule
     {
