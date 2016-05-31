@@ -1,54 +1,56 @@
-using System;
-
 namespace Nancy.Bootstrappers.Windsor.Tests.Fakes
 {
-    public class FakeNancyModuleWithBasePath : LegacyNancyModule
-    {
-        string _id;
+    using System;
 
+    public class FakeNancyModuleWithBasePath : NancyModule
+    {
         public FakeNancyModuleWithBasePath() : base("/fake")
         {
-            _id = Guid.NewGuid().ToString();
-            Delete["/"] = x => {
+            Delete("/", args => {
                 throw new NotImplementedException();
-            };
+                return 200;
+            });
 
-            Get["/unique"] = x =>
+            Get("/unique", args =>
             {
-                return this._id;
-            };
+                return Guid.NewGuid().ToString();
+            });
 
-            Get["/route/with/some/parts"] = x => {
+            Get("/route/with/some/parts", args => {
                 return "FakeNancyModuleWithBasePath";
-            };
+            });
 
-            Get["/should/have/conflicting/route/defined"] = x => {
+            Get("/should/have/conflicting/route/defined", args => {
                 return "FakeNancyModuleWithBasePath";
-            };
+            });
 
-            Get["/child/{value}"] = x => {
+            Get("/child/{value}", args => {
                 throw new NotImplementedException();
-            };
+                return 200;
+            });
 
-            Get["/child/route/{value}"] = x => {
+            Get("/child/route/{value}", args => {
                 return "test";
-            };
+            });
 
-            Get["/"] = x => {
+            Get("/", args => {
                 throw new NotImplementedException();
-            };
+                return 200;
+            });
 
-            Get["/foo/{value}/bar/{capture}"] = x => {
-                return string.Concat(x.value, " ", x.capture);
-            };
+            Get("/foo/{value}/bar/{capture}", args => {
+                return string.Concat(args.value, " ", args.capture);
+                return 200;
+            });
 
-            Post["/"] = x => {
+            Post("/", args => {
                 return "Action result";
-            };
+            });
 
-            Put["/"] = x => {
+            Put("/", args => {
                 throw new NotImplementedException();
-            };
+                return 200;
+            });
         }
     }
 }
