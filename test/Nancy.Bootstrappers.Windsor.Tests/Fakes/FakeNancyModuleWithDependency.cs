@@ -26,7 +26,7 @@
         }
     }
 
-    public class FakeNancyModuleWithDependency : LegacyNancyModule
+    public class FakeNancyModuleWithDependency : NancyModule
     {
         public IDependency Dependency { get; set; }
         public IFoo FooDependency { get; set; }
@@ -38,7 +38,7 @@
         {
             Dependency = dependency;
             FooDependency = foo;
-            Get["/with-dependency"] = x => { return "a-ok"; };
+            Get("/with-dependency", args => "a-ok");
         }
     }
 }
