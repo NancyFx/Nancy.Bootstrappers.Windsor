@@ -4,7 +4,7 @@ This is a bootstrapper for using Windsor with Nancy.  A couple of things are wor
 
 Instead we use Windsor 3.0's new Scoped Lifestyles. This scopes the resolution of dependencies that use the 'Scoped' lifestyle to the current call scope. Specifically we wrap the call to `INancyEngine.HandleRequest` using a dynamic proxy. When the call finishes the scope is disposed of.
 
-Because the CallContext is not reliable when hosting using ASP.NET and IIS we fall back to the standard PerWebRequest scope if we detect HttpContext.Current. 
+Because the CallContext is not reliable when hosting using ASP.NET and IIS we fall back to the standard PerWebRequest scope if we detect HttpContext.Current.
 
 To use this when registering your own dependencies simply use the `NancyScopeAccessor` class provided like this:
 
@@ -13,7 +13,7 @@ protected override void ConfigureApplicationContainer(IWindsorContainer existing
 {
   // This dependency uses the default singleton lifestyle
   existingContainer.Register(Component.For<IApplicationDependency, ApplicationDependencyClass>());
-  
+
   // This dependency is registered per-web-request
   existingContainer.Register(Component.For<IRequestDependency, RequestDependencyClass>().LifestyleScoped<NancyPerWebRequestScopeAccessor>());
 }
@@ -86,11 +86,17 @@ protected override IWindsorContainer GetApplicationContainer()
 }
 ```
 
-## Contributors
+## Code of Conduct
 
-* [Chris Nicola](http://github.com/lucisferre)
-* [Andreas Håkansson](http://github.com/thecodejunkie)
-* [Steven Robbins](http://github.com/grumpydev)
+This project has adopted the code of conduct defined by the [Contributor Covenant](http://contributor-covenant.org/) to clarify expected behavior in our community. For more information see the [.NET Foundation Code of Conduct](http://www.dotnetfoundation.org/code-of-conduct).
+
+## Contribution License Agreement
+
+Contributing to Nancy requires you to sign a [contribution license agreement](https://cla2.dotnetfoundation.org/) (CLA) for anything other than a trivial change. By signing the contribution license agreement, the community is free to use your contribution to .NET Foundation projects.
+
+## .NET Foundation
+
+This project is supported by the [.NET Foundation](http://www.dotnetfoundation.org).
 
 ## Copyright
 
