@@ -5,8 +5,6 @@
     using System.Net;
     using System.Threading.Tasks;
     using Castle.Windsor;
-    using Nancy.Bootstrappers.Windsor.Tests.Fakes;
-    using Nancy.Tests;
     using Xunit;
 
     public class WindsorNancyBootstrapperFixture
@@ -30,8 +28,8 @@
             var result = bootstrapperWithExternalContainer.GetEngine();
 
             // Then
-            result.ShouldNotBeNull();
-            result.ShouldBeOfType<INancyEngine>();
+            Assert.NotNull(result);
+            Assert.IsAssignableFrom<INancyEngine>(result);
         }
 
         [Fact]
@@ -42,8 +40,8 @@
             var result = this.bootstrapper.GetEngine();
 
             // Then
-            result.ShouldNotBeNull();
-            result.ShouldBeOfType<INancyEngine>();
+            Assert.NotNull(result);
+            Assert.IsAssignableFrom<INancyEngine>(result);
         }
 
         [Fact]
@@ -54,7 +52,7 @@
             this.bootstrapper.GetEngine();
 
             // Then
-            this.bootstrapper.ApplicationContainerConfigured.ShouldBeTrue();
+            Assert.True(this.bootstrapper.ApplicationContainerConfigured);
         }
 
         [Fact]
@@ -67,7 +65,7 @@
             var ctx = await engine.HandleRequest(new Request("GET", "/fake/route/with/some/parts", "http"));
 
             // Then
-            ctx.Response.StatusCode.ShouldEqual(Nancy.HttpStatusCode.OK);
+            Assert.Equal(ctx.Response.StatusCode, Nancy.HttpStatusCode.OK);
             ctx.Dispose();
         }
 
@@ -81,7 +79,7 @@
             var ctx = await engine.HandleRequest(new Request("GET", "/with-dependency", "http"));
 
             // Then
-            ctx.Response.StatusCode.ShouldEqual(Nancy.HttpStatusCode.OK);
+            Assert.Equal(ctx.Response.StatusCode, Nancy.HttpStatusCode.OK);
             ctx.Dispose();
         }
 
@@ -98,7 +96,7 @@
             var response2= ctx2.Response.GetContentsAsString();
 
             // Then
-            response1.ShouldNotEqual(response2);
+            Assert.NotEqual(response1, response2);
             ctx1.Dispose();
             ctx2.Dispose();
         }

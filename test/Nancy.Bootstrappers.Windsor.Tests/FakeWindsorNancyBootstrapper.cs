@@ -1,7 +1,7 @@
 namespace Nancy.Bootstrappers.Windsor.Tests
 {
     using System;
-    using Bootstrappers.Windsor.Tests.Fakes;
+    using Fakes;
     using Bootstrapper;
     using Castle.MicroKernel.Registration;
     using Castle.Windsor;
@@ -32,7 +32,7 @@ namespace Nancy.Bootstrappers.Windsor.Tests
 
         protected override IWindsorContainer GetApplicationContainer()
         {
-             return externalContainer ?? base.GetApplicationContainer();
+             return this.externalContainer ?? base.GetApplicationContainer();
         }
 
         protected override void ApplicationStartup(IWindsorContainer container, IPipelines pipelines)
