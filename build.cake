@@ -7,7 +7,7 @@ var source = Argument<string>("source", null);
 var apiKey = Argument<string>("apikey", null);
 
 var version = target.ToLower() == "default"
-    ? "2.0.0-Pre" + (EnvironmentVariable("APPVEYOR_BUILD_NUMBER") ?? "0")
+    ? "2.0.0-pre" + (EnvironmentVariable("APPVEYOR_BUILD_NUMBER") ?? "0")
     : GetNancyVersion(new FilePath("dependencies/Nancy/src/Directory.Build.props"));
 
 // Variables
