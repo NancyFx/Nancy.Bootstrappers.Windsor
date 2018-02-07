@@ -6,8 +6,8 @@ namespace Nancy.Bootstrappers.Windsor.Tests
     {
         public ApplicationRegistrationTask(ITypeCatalog typeCatalog) : base(typeCatalog)
         {
-            Register<IType1>(typeof(Type));
-            Register<IType2>(typeof(Type));
+            this.Register<IType1>(typeof(Type));
+            this.Register<IType2>(typeof(Type));
         }
 
         public interface IType1 { }

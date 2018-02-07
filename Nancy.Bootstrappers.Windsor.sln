@@ -1,4 +1,4 @@
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26228.4
 MinimumVisualStudioVersion = 10.0.40219.1
@@ -15,8 +15,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nancy.Bootstrappers.Windsor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nancy.Bootstrappers.Windsor.Tests", "test\Nancy.Bootstrappers.Windsor.Tests\Nancy.Bootstrappers.Windsor.Tests.csproj", "{F1938D4D-B858-4225-AA87-A53D2FF37721}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Nancy", "dependencies\Nancy\src\Nancy\Nancy.csproj", "{C5FE7609-F38D-442F-A1B3-675A019F09A3}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,10 +29,6 @@ Global
 		{F1938D4D-B858-4225-AA87-A53D2FF37721}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F1938D4D-B858-4225-AA87-A53D2FF37721}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F1938D4D-B858-4225-AA87-A53D2FF37721}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C5FE7609-F38D-442F-A1B3-675A019F09A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C5FE7609-F38D-442F-A1B3-675A019F09A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C5FE7609-F38D-442F-A1B3-675A019F09A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C5FE7609-F38D-442F-A1B3-675A019F09A3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -42,6 +36,5 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{4361E5B2-CFD8-471A-BB22-1FA83F2BE43D} = {157294BD-5A2A-4BB9-BFB7-2598E61307E5}
 		{F1938D4D-B858-4225-AA87-A53D2FF37721} = {0F27EACB-1EC5-4B77-BA0B-E067B75E4D63}
-		{C5FE7609-F38D-442F-A1B3-675A019F09A3} = {157294BD-5A2A-4BB9-BFB7-2598E61307E5}
 	EndGlobalSection
 EndGlobal

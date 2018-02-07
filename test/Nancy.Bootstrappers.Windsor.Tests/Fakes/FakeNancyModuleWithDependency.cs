@@ -22,7 +22,7 @@
         /// </summary>
         public FakeDependency(IFoo fooDependency)
         {
-            FooDependency = fooDependency;
+            this.FooDependency = fooDependency;
         }
     }
 
@@ -36,9 +36,9 @@
         /// </summary>
         public FakeNancyModuleWithDependency(IDependency dependency, IFoo foo)
         {
-            Dependency = dependency;
-            FooDependency = foo;
-            Get("/with-dependency", args => "a-ok");
+            this.Dependency = dependency;
+            this.FooDependency = foo;
+            this.Get("/with-dependency", args => "a-ok");
         }
     }
 }
