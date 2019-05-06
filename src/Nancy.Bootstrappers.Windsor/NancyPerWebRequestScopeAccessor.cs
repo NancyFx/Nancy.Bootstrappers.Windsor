@@ -1,6 +1,7 @@
 namespace Nancy.Bootstrappers.Windsor
 {
     using System.Web;
+    using Castle.Facilities.AspNet.SystemWeb;
     using Castle.MicroKernel.Context;
     using Castle.MicroKernel.Lifestyle;
     using Castle.MicroKernel.Lifestyle.Scoped;

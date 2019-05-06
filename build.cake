@@ -8,14 +8,14 @@ var apiKey = Argument<string>("apikey", null);
 
 var version = target.ToLower() == "default"
     ? "2.0.0-Pre" + (EnvironmentVariable("APPVEYOR_BUILD_NUMBER") ?? "0")
-    : GetNancyVersion(new FilePath("dependencies/Nancy/src/Directory.Build.props"));
+    : "2.0.0";
 
 // Variables
 var projectName = "Nancy.Bootstrappers.Windsor";
 var configuration = "Release";
 var fullFrameworkTarget = "net452";
-var netStandardTarget = "netstandard1.6";
-var netCoreTarget = "netcoreapp1.1";
+var netStandardTarget = "netstandard2.0";
+var netCoreTarget = "netcoreapp2.1";
 
 // Directories
 var output = Directory("build");
